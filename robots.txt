@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://gofabek.github.io/sitemap.xml
