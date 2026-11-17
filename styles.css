@@ -144,6 +144,7 @@ section[id] {
 
 .nav-links a {
   color: var(--muted);
+  white-space: nowrap;
   transition: color 0.2s ease;
 }
 
@@ -849,6 +850,19 @@ section[id] {
 /* ---------- Responsive ---------- */
 
 @media (max-width: 960px) {
+  .nav {
+    gap: 1rem;
+  }
+
+  .nav-links {
+    gap: 1.1rem;
+    font-size: 0.82rem;
+  }
+
+  .nav-tools {
+    gap: 0.6rem;
+  }
+
   .hero-main {
     grid-template-columns: 1fr;
   }
