@@ -1,4 +1,4 @@
-/* Shared data: translations + project info. Used by index.html, project pages and tools/build-projects.mjs */
+/* Shared data: translations + project info. Used by index.html, project pages and tools/build-pages.mjs */
 const translations = {
   uz: {
     nav_about: 'Haqida',
@@ -96,7 +96,24 @@ const translations = {
     now_2: 'JizPI’da Dasturiy injiniring, 3-kurs.',
     now_3: 'Yangi buyurtmalar va hamkorlik uchun ochiqman.',
     gh_title: 'Saytdagi so‘nggi o‘zgarishlar',
-    gh_profile: 'GitHub profilim'
+    gh_profile: 'GitHub profilim',
+    meta_title: 'Soliyev Gʻofur (Gofa) — Mobil va web dasturchi',
+    meta_desc: 'Soliyev Gʻofur (Gofa) — Xorazm, Hazoraspdan mobil, frontend va web dasturchi, JizPI talabasi. Loyihalar, ko‘nikmalar va bog‘lanish.',
+    bot_open: 'Botni ochish',
+    cv_link: 'Rezyume (CV)',
+    cv_title: 'Rezyume',
+    cv_print: 'PDF qilib saqlash',
+    cv_summary: 'Qisqacha',
+    cv_edu: 'Ta’lim',
+    cv_edu_d: 'Dasturiy injiniring yo‘nalishi, 3-kurs talabasi',
+    cv_back: 'Saytga qaytish',
+    nf_title: 'Sahifa topilmadi',
+    nf_text: 'Bu manzilda hech narsa yo‘q — havola eskirgan yoki xato yozilgan bo‘lishi mumkin.',
+    nf_home: 'Bosh sahifaga',
+    nav_blog: 'Maqolalar',
+    cv_present: 'hozirgacha',
+    cv_name: 'Soliyev Gʻofur',
+    cv_uni: 'Jizzax politexnika instituti (JizPI)'
   },
   en: {
     nav_about: 'About',
@@ -194,7 +211,24 @@ const translations = {
     now_2: '3rd year of Software Engineering at JizPI.',
     now_3: 'Open to new freelance work and collaboration.',
     gh_title: 'Latest updates to this site',
-    gh_profile: 'My GitHub'
+    gh_profile: 'My GitHub',
+    meta_title: 'Gʻofur Soliyev (Gofa) — Mobile & Web Developer',
+    meta_desc: 'Gʻofur Soliyev (Gofa) — mobile, frontend and web developer from Hazorasp, Khorezm; Software Engineering student at JizPI. Projects, skills and contact.',
+    bot_open: 'Open the bot',
+    cv_link: 'Résumé (CV)',
+    cv_title: 'Résumé',
+    cv_print: 'Save as PDF',
+    cv_summary: 'Summary',
+    cv_edu: 'Education',
+    cv_edu_d: 'Software Engineering, 3rd-year student',
+    cv_back: 'Back to site',
+    nf_title: 'Page not found',
+    nf_text: 'There’s nothing at this address — the link may be outdated or mistyped.',
+    nf_home: 'Go to homepage',
+    nav_blog: 'Articles',
+    cv_present: 'present',
+    cv_name: 'Gʻofur Soliyev',
+    cv_uni: 'Jizzakh Polytechnic Institute (JizPI)'
   },
   ru: {
     nav_about: 'Обо мне',
@@ -292,7 +326,24 @@ const translations = {
     now_2: '3-й курс программной инженерии в JizPI.',
     now_3: 'Открыт для новых заказов и сотрудничества.',
     gh_title: 'Последние изменения сайта',
-    gh_profile: 'Мой GitHub'
+    gh_profile: 'Мой GitHub',
+    meta_title: 'Гофур Солиев (Gofa) — мобильный и веб-разработчик',
+    meta_desc: 'Гофур Солиев (Gofa) — мобильный, фронтенд и веб-разработчик из Хазараспа (Хорезм), студент JizPI по программной инженерии. Проекты, навыки и контакты.',
+    bot_open: 'Открыть бота',
+    cv_link: 'Резюме (CV)',
+    cv_title: 'Резюме',
+    cv_print: 'Сохранить в PDF',
+    cv_summary: 'Кратко',
+    cv_edu: 'Образование',
+    cv_edu_d: 'Программная инженерия, студент 3 курса',
+    cv_back: 'Вернуться на сайт',
+    nf_title: 'Страница не найдена',
+    nf_text: 'По этому адресу ничего нет — ссылка могла устареть или содержит ошибку.',
+    nf_home: 'На главную',
+    nav_blog: 'Статьи',
+    cv_present: 'по настоящее время',
+    cv_name: 'Гофур Солиев',
+    cv_uni: 'Джизакский политехнический институт (JizPI)'
   },
   kk: {
     nav_about: 'Мен туралы',
@@ -390,11 +441,29 @@ const translations = {
     now_2: 'JizPI-де бағдарламалық инженерия, 3-курс.',
     now_3: 'Жаңа тапсырыстар мен ынтымақтастыққа ашықпын.',
     gh_title: 'Сайттағы соңғы өзгерістер',
-    gh_profile: 'Менің GitHub-ым'
+    gh_profile: 'Менің GitHub-ым',
+    meta_title: 'Ғофур Солиев (Gofa) — мобильді және веб-әзірлеуші',
+    meta_desc: 'Ғофур Солиев (Gofa) — Хазарасп, Хорезмнен шыққан мобильді, фронтенд және веб-әзірлеуші, JizPI студенті. Жобалар, дағдылар және байланыс.',
+    bot_open: 'Ботты ашу',
+    cv_link: 'Түйіндеме (CV)',
+    cv_title: 'Түйіндеме',
+    cv_print: 'PDF ретінде сақтау',
+    cv_summary: 'Қысқаша',
+    cv_edu: 'Білімі',
+    cv_edu_d: 'Бағдарламалық инженерия, 3-курс студенті',
+    cv_back: 'Сайтқа оралу',
+    nf_title: 'Бет табылмады',
+    nf_text: 'Бұл мекенжайда ештеңе жоқ — сілтеме ескірген немесе қате жазылған болуы мүмкін.',
+    nf_home: 'Басты бетке',
+    nav_blog: 'Мақалалар',
+    cv_present: 'қазірге дейін',
+    cv_name: 'Ғофур Солиев',
+    cv_uni: 'Жизақ политехникалық институты (JizPI)'
   }
 };
 
-/* play: Google Play link — leave '' until the app is public, then paste the URL and run tools/build-projects.mjs */
+/* play: Google Play link — leave '' until the app is public, then paste the URL and run: node tools/build-pages.mjs
+   bot:  Telegram bot username (without @) — adds an "Open the bot" button */
 const PROJECTS = {
   girih: {
     name: 'Girih',
@@ -429,6 +498,7 @@ const PROJECTS = {
     name: 'Universal PDF',
     status: 'status_bot',
     shots: 0,
-    tech: ['Node.js', 'Telegram Bot API', 'ConvertAPI']
+    tech: ['Node.js', 'Telegram Bot API', 'ConvertAPI'],
+    bot: '' // Telegram username without @, e.g. 'universal_pdf_bot'
   }
 };

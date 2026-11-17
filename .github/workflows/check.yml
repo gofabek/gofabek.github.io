@@ -1,0 +1,43 @@
+# Har push va pull request'da:
+#  1) generatsiya qilinadigan sahifalar (tools/build-pages.mjs) yangilanganini tekshiradi
+#  2) Lighthouse bilan tezlik, accessibility, SEO baholarini tekshiradi
+name: Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pages-up-to-date:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build pages
+        run: node tools/build-pages.mjs
+      - name: Generated files must be committed
+        run: |
+          if ! git diff --quiet -- . ':(exclude)sitemap.xml'; then
+            echo "::error::Generatsiya qilingan sahifalar eskirgan. Lokal 'node tools/build-pages.mjs' ni ishga tushirib, commit qiling."
+            git diff --stat -- . ':(exclude)sitemap.xml'
+            exit 1
+          fi
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Lighthouse CI
+        run: npx --yes @lhci/cli@0.15.1 autorun
+      - name: Save reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/

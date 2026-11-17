@@ -67,8 +67,24 @@ function setLanguage(lang) {
   store('lang', lang);
 }
 
+// Home page has a URL per language (/, /en/, /ru/, /kk/) — switching there navigates.
+const langPages = {};
+document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((link) => {
+  if (translations[link.hreflang]) langPages[link.hreflang] = link.href;
+});
+const hasLangPages = Object.keys(langPages).length > 0;
+
 langButtons.forEach((button) => {
-  button.addEventListener('click', () => setLanguage(button.dataset.lang));
+  button.addEventListener('click', () => {
+    const lang = button.dataset.lang;
+    const target = langPages[lang] && new URL(langPages[lang], location.href);
+    if (target && location.protocol !== 'file:' && target.pathname !== location.pathname) {
+      store('lang', lang);
+      location.href = target.pathname + location.hash;
+      return;
+    }
+    setLanguage(lang);
+  });
 });
 
 /* ---------- Theme with ink transition ---------- */
@@ -313,6 +329,14 @@ function renderProject(id) {
     links.append(a);
   }
   links.prepend(playButton(p));
+  if (p.bot) {
+    const bot = el('a', 'play-btn');
+    bot.innerHTML = `${TG_ICON}<span>${t('bot_open')}</span>`;
+    bot.href = `https://t.me/${p.bot}`;
+    bot.target = '_blank';
+    bot.rel = 'noreferrer';
+    links.prepend(bot);
+  }
   const page = el('a', 'btn-link', `${t('project_page')} →`);
   page.href = `${id}/`;
   links.append(page);
@@ -321,6 +345,9 @@ function renderProject(id) {
 
 const PLAY_ICON =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 1.8 13.8 12 3.6 22.2a1.6 1.6 0 0 1-.6-1.3V3.1c0-.5.2-1 .6-1.3Zm11.3 11.3 2.6 2.6-11.4 6.5 8.8-9.1Zm3.9-3.9 3 1.7c1 .6 1 1.6 0 2.2l-3 1.7-2.8-2.8 2.8-2.8ZM6.1 1.8l11.4 6.5-2.6 2.6-8.8-9.1Z"/></svg>';
+
+const TG_ICON =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.3 18.7 19.5c-.2 1-.9 1.3-1.7.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.5 13.3 1.8 11.8c-1-.3-1-1 .2-1.5L20.5 3.2c.9-.3 1.6.2 1.4 1.1Z"/></svg>';
 
 function playButton(p) {
   const btn = el(p.play ? 'a' : 'span', p.play ? 'play-btn' : 'play-btn is-soon');
@@ -337,6 +364,7 @@ function playButton(p) {
 function openProject(id) {
   if (!dialog) return;
   currentProject = id;
+  track(`project-${id}`);
   renderProject(id);
   if (!dialog.open) dialog.showModal();
   history.replaceState(null, '', `#p-${id}`);
@@ -462,8 +490,36 @@ if (yearNode) {
 
 syncThemeButton();
 
+// On /, /en/, /ru/, /kk/ the URL decides the language; elsewhere the saved choice does.
 const savedLang = load('lang');
-setLanguage(translations[savedLang] ? savedLang : 'uz');
+setLanguage(hasLangPages ? root.lang : translations[savedLang] ? savedLang : 'uz');
+
+document.querySelectorAll('[data-print]').forEach((button) => {
+  button.addEventListener('click', () => window.print());
+});
+
+/* ---------- Analytics (GoatCounter, cookie-free) ---------- */
+
+// Create a site at goatcounter.com and put its code here, e.g. 'gofa' for gofa.goatcounter.com
+const GOATCOUNTER = '';
+
+if (GOATCOUNTER && location.hostname.endsWith('github.io')) {
+  const gc = document.createElement('script');
+  gc.async = true;
+  gc.src = 'https://gc.zgo.at/count.js';
+  gc.dataset.goatcounter = `https://${GOATCOUNTER}.goatcounter.com/count`;
+  document.head.append(gc);
+}
+
+function track(event) {
+  if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: event, event: true });
+}
+
+/* ---------- Offline support ---------- */
+
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
 
 openFromHash();
 window.addEventListener('hashchange', openFromHash);
