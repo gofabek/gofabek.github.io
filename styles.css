@@ -31,6 +31,7 @@
 html {
   scroll-behavior: smooth;
   background: var(--bg);
+  overflow-x: hidden;
 }
 
 body {
@@ -44,8 +45,6 @@ body {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
-  overflow-x: hidden;
-  overflow-x: clip;
 }
 
 a {
@@ -1323,8 +1322,10 @@ section[id] {
   }
 
   .hero::before {
-    right: -40%;
-    width: 120vw;
+    right: auto;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
   }
 }
 
