@@ -10,8 +10,11 @@
     <meta name="google-site-verification" content="plxi4hdUgVBnclfA9Le2nlFN_-bZwhoZb5W802TkYt8" />
     <link rel="canonical" href="https://gofabek.github.io/" />
     <meta property="og:url" content="https://gofabek.github.io/" />
-    <meta property="og:image" content="https://gofabek.github.io/images/gofur.jpg" />
-    <meta property="og:image:alt" content="Soliyev Gʻofur (Gofa)" />
+    <meta property="og:image" content="https://gofabek.github.io/images/og/home.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Soliyev Gʻofur — Mobil va web dasturchi" />
+    <meta property="og:site_name" content="Soliyev Gʻofur" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta property="og:type" content="profile" />
     <meta property="og:title" content="Soliyev Gʻofur (Gofa) — Mobil va web dasturchi" />
@@ -61,12 +64,8 @@
     </script>
     <meta name="theme-color" content="#f1efe9" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='%23e8502e'%3E%3Crect x='7' y='7' width='18' height='18'/%3E%3Crect x='7' y='7' width='18' height='18' transform='rotate(45 16 16)'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='4' fill='%23f1efe9'/%3E%3C/svg%3E" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -84,10 +83,10 @@
 
         <div class="nav-tools">
           <div class="lang-switcher" aria-label="Language switcher">
-            <button type="button" class="lang-btn active" data-lang="uz" aria-label="Uzbek language">Uz</button>
-            <button type="button" class="lang-btn" data-lang="en" aria-label="English language">En</button>
-            <button type="button" class="lang-btn" data-lang="kk" aria-label="Kazakh language">Kk</button>
-            <button type="button" class="lang-btn" data-lang="ru" aria-label="Russian language">Ru</button>
+            <button type="button" class="lang-btn active" data-lang="uz" aria-label="Uz — Oʻzbekcha">Uz</button>
+            <button type="button" class="lang-btn" data-lang="en" aria-label="En — English">En</button>
+            <button type="button" class="lang-btn" data-lang="kk" aria-label="Kk — Қазақша">Kk</button>
+            <button type="button" class="lang-btn" data-lang="ru" aria-label="Ru — Русский">Ru</button>
           </div>
 
           <button type="button" class="theme-toggle" aria-label="Toggle dark mode" aria-pressed="false">
@@ -131,8 +130,11 @@
           </div>
         </div>
           </div>
-          <figure class="hero-photo reveal">
-            <img src="images/gofur.jpg" alt="Soliyev Gʻofur (Gofa)" width="900" height="1200" fetchpriority="high" />
+          <figure class="hero-photo">
+            <picture>
+              <source type="image/webp" srcset="images/gofur-480.webp 480w, images/gofur-760.webp 760w" sizes="(max-width: 760px) calc(100vw - 2rem), 360px" />
+              <img src="images/gofur.jpg" alt="Soliyev Gʻofur (Gofa)" width="900" height="1200" fetchpriority="high" decoding="async" />
+            </picture>
           </figure>
         </div>
 
@@ -196,7 +198,7 @@
             <div class="project-visual"><img src="images/girih.webp" alt="Girih" width="800" height="391" loading="lazy" decoding="async" /></div>
             <div class="project-body">
               <span class="tag" data-i18n="project_status">Android · Yopiq test</span>
-              <h3>Girih</h3>
+              <h3><a class="project-link" href="girih/">Girih</a></h3>
               <p data-i18n="desc_girih">O‘zbek naqshi uslubidagi o‘q jumbog‘i: 1000 ta daraja va O‘zbekistonning 200 ta obidasi.</p>
               <ul class="project-features">
                 <li data-i18n="f_girih_1">1000 ta daraja — osondan qiyinga</li>
@@ -215,7 +217,7 @@
             <div class="project-visual"><img src="images/koshin.webp" alt="Koshin" width="800" height="391" loading="lazy" decoding="async" /></div>
             <div class="project-body">
               <span class="tag" data-i18n="project_status">Android · Yopiq test</span>
-              <h3>Koshin</h3>
+              <h3><a class="project-link" href="koshin/">Koshin</a></h3>
               <p data-i18n="desc_koshin">8×8 maydonga bloklarni joylab, qatorlarni tozalaydigan sokin pazl. Kunlik vazifa va mavzular bilan.</p>
               <ul class="project-features">
                 <li data-i18n="f_koshin_1">8×8 maydon, adolatli shakl generatori</li>
@@ -234,7 +236,7 @@
             <div class="project-visual"><img src="images/bloksxema.webp" alt="Blok sxema (Flowgorithm)" width="800" height="391" loading="lazy" decoding="async" /></div>
             <div class="project-body">
               <span class="tag" data-i18n="project_status">Android · Yopiq test</span>
-              <h3>Blok sxema <span class="project-alias">(Flowgorithm)</span></h3>
+              <h3><a class="project-link" href="bloksxema/">Blok sxema <span class="project-alias">(Flowgorithm)</span></a></h3>
               <p data-i18n="desc_bloksxema">Algoritmni blok sxemada chizing, telefonda qadamma-qadam ishga tushiring va Python yoki C++ kodiga aylantiring.</p>
               <ul class="project-features">
                 <li data-i18n="f_bloksxema_1">Bloklar: kiritish, chiqarish, if, while, for</li>
@@ -253,7 +255,7 @@
             <div class="project-visual visual-upf" aria-hidden="true"><div class="upf-files"><b>DOCX</b><b>XLSX</b><b>PPTX</b><b>JPG</b></div><span class="upf-arrow">→</span><span class="upf-pdf">PDF</span></div>
             <div class="project-body">
               <span class="tag" data-i18n="status_bot">Telegram bot · Node.js</span>
-              <h3>Universal PDF</h3>
+              <h3><a class="project-link" href="upf/">Universal PDF</a></h3>
               <p data-i18n="desc_upf">Office hujjatlari va rasmlarni bir zumda PDF ga aylantiradigan Telegram bot.</p>
               <ul class="project-features">
                 <li data-i18n="f_upf_1">Word, Excel, PowerPoint → PDF</li>
@@ -313,8 +315,29 @@
         </div>
       </section>
 
+      <section id="now" class="section container">
+        <div class="split">
+          <p class="label reveal"><span>5</span><span data-i18n="now_title">Hozir</span></p>
+          <div class="split-body">
+            <h2 class="reveal" data-i18n="now_subtitle">Hozir nima ustida ishlayapman.</h2>
+            <div class="now-grid">
+              <ul class="now-list reveal">
+                <li data-i18n="now_1">Girih, Koshin va Blok sxemani Google Play’da hamma uchun ochiq chiqarishga tayyorlayapman.</li>
+                <li data-i18n="now_2">JizPI’da Dasturiy injiniring, 3-kurs.</li>
+                <li data-i18n="now_3">Yangi buyurtmalar va hamkorlik uchun ochiqman.</li>
+              </ul>
+              <div class="gh-box reveal" hidden>
+                <h3 class="gh-title"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.980-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg><span data-i18n="gh_title">Saytdagi so‘nggi o‘zgarishlar</span></h3>
+                <ol class="gh-commits"></ol>
+                <a class="btn-link gh-profile" href="https://github.com/gofabek" target="_blank" rel="noreferrer"><span data-i18n="gh_profile">GitHub profilim</span> ↗</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="contact" class="section container contact">
-        <p class="label reveal"><span>5</span><span data-i18n="contact_title">Bog‘lanish</span></p>
+        <p class="label reveal"><span>6</span><span data-i18n="contact_title">Bog‘lanish</span></p>
         <h2 class="contact-title reveal" data-i18n-html="contact_subtitle_html">Birgalikda <em>ma’noli</em> bir narsa yarataylik.</h2>
 
         <div class="contact-grid">
@@ -413,6 +436,7 @@
       </div>
     </footer>
 
+    <script src="i18n.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
