@@ -15,6 +15,10 @@ const ROOT = resolve(import.meta.dirname, '..');
 const SITE = 'https://gofabek.github.io';
 const WITH_DRAFTS = process.argv.includes('--drafts');
 const LOCALES = { en: 'en_US', ru: 'ru_RU', kk: 'kk_KZ' };
+const OG_LOCALE = { uz: 'uz_UZ', ...LOCALES };
+const LANGS = ['uz', ...Object.keys(LOCALES)];
+const langDir = (lang) => (lang === 'uz' ? '' : `${lang}/`);
+const ogImage = (name, lang) => `images/og/${name}${lang === 'uz' ? '' : `-${lang}`}.jpg`;
 
 const ctx = {};
 vm.createContext(ctx);
@@ -68,11 +72,12 @@ const pick = (re) => {
 };
 
 // Point same-page anchors and relative links of a header/footer fragment at the site root.
-const rebase = (html, prefix) =>
+const rebase = (html, home, root = home) =>
   html
-    .replace(/href="#home"/g, `href="${prefix || './'}"`)
-    .replace(/href="#([a-z]+)"/g, `href="${prefix}#$1"`)
-    .replace(/href="(blog|cv)\/"/g, `href="${prefix}$1/"`);
+    .replace(/href="#home"/g, `href="${home || './'}"`)
+    .replace(/href="#([a-z]+)"/g, `href="${home}#$1"`)
+    .replace(/href="cv\/"/g, `href="${home}cv/"`)
+    .replace(/href="blog\/"/g, `href="${root}blog/"`);
 
 const headerSrc = pick(/<header class="site-header">[\s\S]*?<\/header>/);
 const footerSrc = pick(/<footer class="site-footer">[\s\S]*?<\/footer>/);
@@ -80,14 +85,18 @@ const themeScript = pick(/<script>\s*\(function \(\) \{[\s\S]*?<\/script>/);
 const favicon = pick(/<link rel="icon"[^>]*\/>/);
 const skillList = pick(/<ul class="skill-list[\s\S]*?<\/ul>/).replace(' reveal', '');
 
-function head({ title, desc, path, image, imageAlt, prefix, type = 'website', ld, noindex, extra = '' }) {
+function head({ title, desc, path, image, imageAlt, prefix, type = 'website', ld, noindex, extra = '', lang = 'uz', alt }) {
   const url = `${SITE}/${path}`;
+  const alternates = alt
+    ? '\n    ' +
+      [...LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${SITE}/${langDir(l)}${alt}" />`), `<link rel="alternate" hreflang="x-default" href="${SITE}/${alt}" />`].join('\n    ')
+    : '';
   return `<meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${esc(title)}</title>
     <meta name="description" content="${esc(desc)}" />
     <meta name="author" content="Soliyev Gʻofur" />
-    ${noindex ? '<meta name="robots" content="noindex" />' : `<link rel="canonical" href="${url}" />`}
+    ${noindex ? '<meta name="robots" content="noindex" />' : `<link rel="canonical" href="${url}" />`}${alternates}
     <meta property="og:type" content="${type}" />
     <meta property="og:url" content="${url}" />
     <meta property="og:title" content="${esc(title)}" />
@@ -97,7 +106,7 @@ function head({ title, desc, path, image, imageAlt, prefix, type = 'website', ld
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="${esc(imageAlt || title)}" />
     <meta property="og:site_name" content="Soliyev Gʻofur" />
-    <meta property="og:locale" content="uz_UZ" />
+    <meta property="og:locale" content="${OG_LOCALE[lang]}" />
     <meta name="twitter:card" content="summary_large_image" />
     ${ld ? `<script type="application/ld+json">${JSON.stringify(ld)}</script>` : ''}
     ${themeScript}
@@ -108,18 +117,18 @@ function head({ title, desc, path, image, imageAlt, prefix, type = 'website', ld
     <link rel="stylesheet" href="${prefix}styles.css" />${extra}`;
 }
 
-const shell = ({ headHtml, bodyClass, prefix, main }) => `<!DOCTYPE html>
-<html lang="uz">
+const shell = ({ headHtml, bodyClass, prefix, main, lang = 'uz', home = prefix }) => `<!DOCTYPE html>
+<html lang="${lang}">
   <head>
     ${headHtml}
   </head>
   <body class="${bodyClass}">
     ${GENERATED}
-    ${rebase(headerSrc, prefix)}
+    ${rebase(lang === 'uz' ? headerSrc : headerSrc.replace(/class="lang-btn active"/, 'class="lang-btn"').replace(`class="lang-btn" data-lang="${lang}"`, `class="lang-btn active" data-lang="${lang}"`), home, prefix)}
 
 ${main}
 
-    ${rebase(footerSrc, prefix)}
+    ${rebase(footerSrc, home, prefix)}
 
     <script src="${prefix}i18n.js"></script>
     <script src="${prefix}script.js"></script>
@@ -137,28 +146,31 @@ const TG_ICON =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.3 18.7 19.5c-.2 1-.9 1.3-1.7.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.5 13.3 1.8 11.8c-1-.3-1-1 .2-1.5L20.5 3.2c.9-.3 1.6.2 1.4 1.1Z"/></svg>';
 const CATEGORY = { girih: 'GameApplication', koshin: 'GameApplication', bloksxema: 'EducationalApplication', upf: 'UtilitiesApplication' };
 
-function visual(id, p, eager) {
+function visual(id, p, eager, A = '../') {
   if (id === 'upf') {
     return `<div class="project-visual visual-upf pp-visual" aria-hidden="true"><div class="upf-files"><b>DOCX</b><b>XLSX</b><b>PPTX</b><b>JPG</b></div><span class="upf-arrow">→</span><span class="upf-pdf">PDF</span></div>`;
   }
-  return `<div class="project-visual pp-visual"><img src="../images/${id}.webp" alt="${esc(p.name)}" width="800" height="391"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async" /></div>`;
+  return `<div class="project-visual pp-visual"><img src="${A}images/${id}.webp" alt="${esc(p.name)}" width="800" height="391"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async" /></div>`;
 }
 
-function projectPage(id, p) {
-  const path = `${id}/`;
-  const title = `${p.name} — Soliyev Gʻofur`;
-  const desc = uz[`desc_${id}`];
+function projectPage(id, p, lang) {
+  const t = T[lang];
+  const A = lang === 'uz' ? '../' : '../../';
+  const path = `${langDir(lang)}${id}/`;
+  const title = `${p.name} — ${t.cv_name}`;
+  const desc = t[`desc_${id}`];
   const isApp = Boolean(p.store);
   const ld = [
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
       name: p.name,
-      description: uz[`long_${id}`],
+      description: t[`long_${id}`],
+      inLanguage: lang,
       applicationCategory: CATEGORY[id] || 'Application',
       operatingSystem: isApp ? 'Android' : 'Telegram',
       url: `${SITE}/${path}`,
-      image: `${SITE}/images/og/${id}.jpg`,
+      image: `${SITE}/${ogImage(id, lang)}`,
       ...(p.play ? { downloadUrl: p.play, installUrl: p.play } : {}),
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
       author: PERSON
@@ -167,8 +179,8 @@ function projectPage(id, p) {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Soliyev Gʻofur', item: `${SITE}/` },
-        { '@type': 'ListItem', position: 2, name: uz.projects_title, item: `${SITE}/#projects` },
+        { '@type': 'ListItem', position: 1, name: 'Soliyev Gʻofur', item: `${SITE}/${langDir(lang)}` },
+        { '@type': 'ListItem', position: 2, name: t.projects_title, item: `${SITE}/${langDir(lang)}#projects` },
         { '@type': 'ListItem', position: 3, name: p.name, item: `${SITE}/${path}` }
       ]
     }
@@ -177,58 +189,60 @@ function projectPage(id, p) {
   const actions = [
     isApp
       ? p.play
-        ? `<a class="play-btn" href="${esc(p.play)}" target="_blank" rel="noreferrer">${PLAY_ICON}<span data-i18n="play_get">${uz.play_get}</span></a>`
-        : `<span class="play-btn is-soon">${PLAY_ICON}<span data-i18n="play_soon">${uz.play_soon}</span></span>`
+        ? `<a class="play-btn" href="${esc(p.play)}" target="_blank" rel="noreferrer">${PLAY_ICON}<span data-i18n="play_get">${t.play_get}</span></a>`
+        : `<span class="play-btn is-soon">${PLAY_ICON}<span data-i18n="play_soon">${t.play_soon}</span></span>`
       : '',
     p.bot
-      ? `<a class="play-btn" href="https://t.me/${esc(p.bot)}" target="_blank" rel="noreferrer">${TG_ICON}<span data-i18n="bot_open">${uz.bot_open}</span></a>`
+      ? `<a class="play-btn" href="https://t.me/${esc(p.bot)}" target="_blank" rel="noreferrer">${TG_ICON}<span data-i18n="bot_open">${t.bot_open}</span></a>`
       : '',
     p.privacy
-      ? `<a class="btn-link" href="${esc(p.privacy)}" target="_blank" rel="noreferrer"><span data-i18n="dlg_privacy">${uz.dlg_privacy}</span> ↗</a>`
+      ? `<a class="btn-link" href="${esc(p.privacy)}" target="_blank" rel="noreferrer"><span data-i18n="dlg_privacy">${t.dlg_privacy}</span> ↗</a>`
       : ''
   ].filter(Boolean);
 
   const shots = Array.from({ length: p.shots }, (_, i) =>
-    `<img src="../images/shots/${id}-${i + 1}.webp" alt="${esc(p.name)} — ${i + 1}" width="480" height="${p.shotHeight}" loading="lazy" decoding="async" />`
+    `<img src="${A}images/shots/${id}-${i + 1}.webp" alt="${esc(p.name)} — ${i + 1}" width="480" height="${p.shotHeight}" loading="lazy" decoding="async" />`
   ).join('\n            ');
-  const features = [1, 2, 3, 4].map((i) => `<li data-i18n="f_${id}_${i}">${uz[`f_${id}_${i}`]}</li>`).join('\n              ');
+  const features = [1, 2, 3, 4].map((i) => `<li data-i18n="f_${id}_${i}">${t[`f_${id}_${i}`]}</li>`).join('\n              ');
   const tech = p.tech.map((x) => `<li>${esc(x)}</li>`).join('');
   const others = Object.entries(PROJECTS)
     .filter(([k]) => k !== id)
     .map(([k, o]) => `
           <a class="pp-other" href="../${k}/">
-            ${visual(k, o, false)}
-            <span class="tag" data-i18n="${o.status}">${uz[o.status]}</span>
+            ${visual(k, o, false, A)}
+            <span class="tag" data-i18n="${o.status}">${t[o.status]}</span>
             <span class="pp-other-name">${esc(o.name)}</span>
           </a>`)
     .join('');
 
   return shell({
-    prefix: '../',
+    prefix: A,
+    home: '../',
+    lang,
     bodyClass: 'project-page',
-    headHtml: head({ title, desc, path, image: `images/og/${id}.jpg`, imageAlt: p.name, prefix: '../', ld }),
+    headHtml: head({ title, desc, path, image: ogImage(id, lang), imageAlt: p.name, prefix: A, ld, lang, alt: `${id}/` }),
     main: `    <main id="home" class="container pp">
       <nav class="pp-crumbs" aria-label="Breadcrumb">
-        <a class="btn-link" href="../#projects">← <span data-i18n="pp_back">${uz.pp_back}</span></a>
+        <a class="btn-link" href="../#projects">← <span data-i18n="pp_back">${t.pp_back}</span></a>
       </nav>
 
       <header class="pp-hero">
         <div class="pp-copy">
-          <span class="tag" data-i18n="${p.status}">${uz[p.status]}</span>
+          <span class="tag" data-i18n="${p.status}">${t[p.status]}</span>
           <h1 class="pp-title">${esc(p.name)}</h1>
           <p class="pp-lead" data-i18n="desc_${id}">${desc}</p>
           ${actions.length ? `<div class="pp-actions">\n            ${actions.join('\n            ')}\n          </div>` : ''}
-          ${isApp && !p.play ? `<p class="pd-soon" data-i18n="dlg_soon">${uz.dlg_soon}</p>` : ''}
+          ${isApp && !p.play ? `<p class="pd-soon" data-i18n="dlg_soon">${t.dlg_soon}</p>` : ''}
         </div>
-        ${visual(id, p, true)}
+        ${visual(id, p, true, A)}
       </header>
 
       <section class="pp-section">
-        <p class="pp-long" data-i18n="long_${id}">${uz[`long_${id}`]}</p>
+        <p class="pp-long" data-i18n="long_${id}">${t[`long_${id}`]}</p>
       </section>
 ${p.shots ? `
       <section class="pp-section" aria-labelledby="pp-shots-title">
-        <h2 class="pp-h" id="pp-shots-title" data-i18n="pp_shots">${uz.pp_shots}</h2>
+        <h2 class="pp-h" id="pp-shots-title" data-i18n="pp_shots">${t.pp_shots}</h2>
         <div class="pd-shots pp-shots" tabindex="0">
             ${shots}
         </div>
@@ -236,19 +250,19 @@ ${p.shots ? `
 ` : ''}
       <section class="pp-section pd-cols pp-cols">
         <div>
-          <h2 class="pp-h" data-i18n="dlg_features">${uz.dlg_features}</h2>
+          <h2 class="pp-h" data-i18n="dlg_features">${t.dlg_features}</h2>
           <ul class="project-features pp-features">
               ${features}
           </ul>
         </div>
         <div>
-          <h2 class="pp-h" data-i18n="dlg_tech">${uz.dlg_tech}</h2>
+          <h2 class="pp-h" data-i18n="dlg_tech">${t.dlg_tech}</h2>
           <ul class="pd-tech">${tech}</ul>
         </div>
       </section>
 
       <section class="pp-section" aria-labelledby="pp-other-title">
-        <h2 class="pp-h" id="pp-other-title" data-i18n="pp_other">${uz.pp_other}</h2>
+        <h2 class="pp-h" id="pp-other-title" data-i18n="pp_other">${t.pp_other}</h2>
         <div class="pp-others">${others}
         </div>
       </section>
@@ -256,9 +270,11 @@ ${p.shots ? `
   });
 }
 
-for (const [id, p] of Object.entries(PROJECTS)) {
-  write(`${id}/index.html`, projectPage(id, p));
-  if (!existsSync(join(ROOT, 'images/og', `${id}.jpg`))) console.warn(`! images/og/${id}.jpg missing — run tools/build-images.mjs`);
+for (const lang of LANGS) {
+  for (const [id, p] of Object.entries(PROJECTS)) {
+    write(`${langDir(lang)}${id}/index.html`, projectPage(id, p, lang));
+    if (!existsSync(join(ROOT, ogImage(id, lang)))) console.warn(`! ${ogImage(id, lang)} missing — run tools/build-images.mjs`);
+  }
 }
 
 /* ---------- Translated copies of the home page ---------- */
@@ -285,11 +301,13 @@ function localize(lang) {
     .replace(/(<meta property="og:description" content=")[^"]*"/, `$1${esc(s.meta_desc)}"`)
     .replace(/(<meta property="og:locale" content=")[^"]*"/, `$1${LOCALES[lang]}"`)
     .replace(/(<link rel="canonical" href=")[^"]*"/, `$1${SITE}/${lang}/"`)
-    .replace(/(<meta property="og:url" content=")[^"]*"/, `$1${SITE}/${lang}/"`);
+    .replace(/(<meta property="og:url" content=")[^"]*"/, `$1${SITE}/${lang}/"`)
+    .replace(/(<meta property="og:image" content=")[^"]*"/, `$1${SITE}/${ogImage('home', lang)}"`)
+    .replace(/(<meta property="og:image:alt" content=")[^"]*"/, `$1${esc(s.meta_title)}"`);
 
   // Relative URLs now live one folder deeper.
   html = html
-    .replace(/\b(src|href)="(?!https?:|#|mailto:|data:|\/|\.\.\/)([^"]+)"/g, '$1="../$2"')
+    .replace(/\b(src|href)="(?!https?:|#|mailto:|data:|\/|\.\.\/|(?:girih|koshin|bloksxema|upf|cv)\/)([^"]+)"/g, '$1="../$2"')
     .replace(/srcset="([^"]+)"/g, (m, list) => `srcset="${list.replace(/(^|,\s*)(?!https?:|\/)/g, '$1../')}"`);
 
   return html.replace('<body>', `<body>\n    ${GENERATED}`);
@@ -307,41 +325,46 @@ const CONTACTS = [
   ['Web', 'gofabek.github.io', `${SITE}/`]
 ];
 
-const cvProjects = Object.entries(PROJECTS)
+function cvPage(lang) {
+  const t = T[lang];
+  const A = lang === 'uz' ? '../' : '../../';
+  const cvProjects = Object.entries(PROJECTS)
   .map(([id, p]) => `
           <li>
-            <div class="cv-row-head"><h3><a href="../${id}/">${esc(p.name)}</a></h3><span class="cv-meta" data-i18n="${p.status}">${uz[p.status]}</span></div>
-            <p data-i18n="desc_${id}">${uz[`desc_${id}`]}</p>
+            <div class="cv-row-head"><h3><a href="../${id}/">${esc(p.name)}</a></h3><span class="cv-meta" data-i18n="${p.status}">${t[p.status]}</span></div>
+            <p data-i18n="desc_${id}">${t[`desc_${id}`]}</p>
             <p class="cv-tech">${p.tech.map(esc).join(' · ')}</p>
           </li>`)
   .join('');
 
-write(
-  'cv/index.html',
-  shell({
-    prefix: '../',
+  return shell({
+    prefix: A,
+    home: '../',
+    lang,
     bodyClass: 'cv-page',
     headHtml: head({
-      title: `${uz.cv_title} — Soliyev Gʻofur`,
-      desc: uz.meta_desc,
-      path: 'cv/',
-      image: 'images/og/home.jpg',
-      prefix: '../',
+      title: `${t.cv_title} — ${t.cv_name}`,
+      desc: t.meta_desc,
+      path: `${langDir(lang)}cv/`,
+      image: ogImage('home', lang),
+      prefix: A,
+      lang,
+      alt: 'cv/',
       type: 'profile',
-      ld: { '@context': 'https://schema.org', '@type': 'ProfilePage', mainEntity: { ...PERSON, jobTitle: 'Mobil, frontend va web dasturchi' } }
+      ld: { '@context': 'https://schema.org', '@type': 'ProfilePage', mainEntity: { ...PERSON, name: t.cv_name, jobTitle: t.og_role } }
     }),
     main: `    <main id="home" class="container cv">
       <div class="cv-toolbar">
-        <a class="btn-link" href="../">← <span data-i18n="cv_back">${uz.cv_back}</span></a>
-        <button type="button" class="btn btn-primary" data-print><span data-i18n="cv_print">${uz.cv_print}</span></button>
+        <a class="btn-link" href="../">← <span data-i18n="cv_back">${t.cv_back}</span></a>
+        <button type="button" class="btn btn-primary" data-print><span data-i18n="cv_print">${t.cv_print}</span></button>
       </div>
 
       <article class="cv-sheet">
         <header class="cv-head">
           <div>
-            <h1 data-i18n="cv_name">${uz.cv_name}</h1>
-            <p class="cv-role" data-i18n="profile_role">${uz.profile_role}</p>
-            <p class="cv-meta" data-i18n="profile_location_value">${uz.profile_location_value}</p>
+            <h1 data-i18n="cv_name">${t.cv_name}</h1>
+            <p class="cv-role" data-i18n="profile_role">${t.profile_role}</p>
+            <p class="cv-meta" data-i18n="profile_location_value">${t.profile_location_value}</p>
           </div>
           <ul class="cv-contacts">
             ${CONTACTS.map(([k, v, href]) => `<li><span>${k}</span><a href="${href}">${esc(v)}</a></li>`).join('\n            ')}
@@ -349,37 +372,39 @@ write(
         </header>
 
         <section class="cv-block">
-          <h2 data-i18n="cv_summary">${uz.cv_summary}</h2>
+          <h2 data-i18n="cv_summary">${t.cv_summary}</h2>
           <div>
-            <p data-i18n="hero_lead">${uz.hero_lead}</p>
-            <p data-i18n="about_p2">${uz.about_p2}</p>
+            <p data-i18n="hero_lead">${t.hero_lead}</p>
+            <p data-i18n="about_p2">${t.about_p2}</p>
           </div>
         </section>
 
         <section class="cv-block">
-          <h2 data-i18n="cv_edu">${uz.cv_edu}</h2>
+          <h2 data-i18n="cv_edu">${t.cv_edu}</h2>
           <div>
-            <div class="cv-row-head"><h3 data-i18n="cv_uni">${uz.cv_uni}</h3><span class="cv-meta">2024 — <span data-i18n="cv_present">${uz.cv_present}</span></span></div>
-            <p data-i18n="cv_edu_d">${uz.cv_edu_d}</p>
+            <div class="cv-row-head"><h3 data-i18n="cv_uni">${t.cv_uni}</h3><span class="cv-meta">2024 — <span data-i18n="cv_present">${t.cv_present}</span></span></div>
+            <p data-i18n="cv_edu_d">${t.cv_edu_d}</p>
           </div>
         </section>
 
         <section class="cv-block">
-          <h2 data-i18n="skills_title">${uz.skills_title}</h2>
+          <h2 data-i18n="skills_title">${t.skills_title}</h2>
           <div>
             ${skillList}
           </div>
         </section>
 
         <section class="cv-block">
-          <h2 data-i18n="projects_title">${uz.projects_title}</h2>
+          <h2 data-i18n="projects_title">${t.projects_title}</h2>
           <ul class="cv-list">${cvProjects}
           </ul>
         </section>
       </article>
     </main>`
-  })
-);
+  });
+}
+
+for (const lang of LANGS) write(`${langDir(lang)}cv/index.html`, cvPage(lang));
 
 /* ---------- 404 ---------- */
 
@@ -476,8 +501,7 @@ const today = new Date().toISOString().slice(0, 10);
 const urls = [
   '',
   ...Object.keys(LOCALES).map((l) => `${l}/`),
-  ...Object.keys(PROJECTS).map((id) => `${id}/`),
-  'cv/',
+  ...LANGS.flatMap((l) => [...Object.keys(PROJECTS).map((id) => `${langDir(l)}${id}/`), `${langDir(l)}cv/`]),
   ...(posts.some((p) => !p.draft) ? ['blog/', ...posts.filter((p) => !p.draft).map((p) => `blog/${p.slug}/`)] : [])
 ];
 writeFileSync(

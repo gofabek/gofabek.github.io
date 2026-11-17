@@ -14,7 +14,6 @@ const tmp = mkdtempSync(join(tmpdir(), 'og-'));
 const ctx = {};
 vm.createContext(ctx);
 vm.runInContext(readFileSync(join(ROOT, 'i18n.js'), 'utf8') + ';this.T = translations; this.P = PROJECTS;', ctx);
-const uz = ctx.T.uz;
 
 const fontCss = readFileSync(join(ROOT, 'styles.css'), 'utf8')
   .split('/* ---------- */')[0]
@@ -58,42 +57,52 @@ function shot(name, html, w, h) {
 mkdirSync(join(ROOT, 'images/og'), { recursive: true });
 mkdirSync(join(ROOT, 'icons'), { recursive: true });
 
-/* ---------- Main social card ---------- */
-shot('images/og/home.jpg', `
+const LANGS = ['uz', 'en', 'ru', 'kk'];
+const suffix = (lang) => (lang === 'uz' ? '' : `-${lang}`);
+const dir = (lang) => (lang === 'uz' ? '' : `/${lang}`);
+
+for (const lang of LANGS) {
+  const t = ctx.T[lang];
+  const [first, ...rest] = t.cv_name.split(' ');
+
+  /* ---------- Main social card ---------- */
+  shot(`images/og/home${suffix(lang)}.jpg`, `
 <div class="pattern"></div>
 <div style="position:absolute;left:72px;top:70px;bottom:70px;width:660px;display:flex;flex-direction:column;justify-content:space-between">
-  <div class="url"><i></i>gofabek.github.io</div>
+  <div class="url"><i></i>gofabek.github.io${dir(lang)}</div>
   <div>
-    <h1 class="serif" style="font-size:104px;line-height:.95;letter-spacing:-.01em">Soliyev<br>Gʻofur</h1>
-    <p class="serif" style="font-size:46px;margin-top:22px;line-height:1.05"><em>Mobil va web dasturchi</em></p>
+    <h1 class="serif" style="font-size:104px;line-height:.95;letter-spacing:-.01em">${first}<br>${rest.join(' ')}</h1>
+    <p class="serif" style="font-size:46px;margin-top:22px;line-height:1.05"><em>${t.og_role}</em></p>
   </div>
-  <p style="font-size:24px;color:#6b6762;line-height:1.45">Android ilovalar · Veb-saytlar · Telegram botlar<br>JizPI · Hazorasp, Xorazm</p>
+  <p style="font-size:24px;color:#6b6762;line-height:1.45">${t.og_skills}<br>JizPI · ${t.profile_location_value}</p>
 </div>
 <div style="position:absolute;right:72px;top:56px;width:378px;height:504px;border-radius:10px;overflow:hidden;background:#e8e5dd">
   <img src="file://${ROOT}/images/gofur.jpg" style="width:100%;height:100%;object-fit:cover;object-position:50% 60%">
 </div>
 <div class="band"></div>`, 1200, 630);
 
-/* ---------- Project cards ---------- */
-for (const [id, p] of Object.entries(ctx.P)) {
-  const visual = id === 'upf'
-    ? `<div style="width:100%;height:100%;background:linear-gradient(135deg,#1c3d63,#229ed9);display:flex;align-items:center;justify-content:center;gap:34px;color:#fff;font-weight:600">
+  /* ---------- Project cards ---------- */
+  for (const [id, p] of Object.entries(ctx.P)) {
+    const visual = id === 'upf'
+      ? `<div style="width:100%;height:100%;background:linear-gradient(135deg,#1c3d63,#229ed9);display:flex;align-items:center;justify-content:center;gap:34px;color:#fff;font-weight:600">
          <div style="display:grid;grid-template-columns:auto auto;gap:12px">${['DOCX', 'XLSX', 'PPTX', 'JPG'].map((x) => `<b style="font-size:20px;padding:12px 18px;border-radius:8px;background:rgba(255,255,255,.16)">${x}</b>`).join('')}</div>
          <span style="font-size:52px;opacity:.8">→</span>
          <span style="font-size:40px;font-weight:700;padding:28px 26px;border-radius:12px;background:#fff;color:#d93025">PDF</span></div>`
-    : `<img src="file://${ROOT}/images/${id}.webp" style="width:100%;height:100%;object-fit:cover">`;
-  shot(`images/og/${id}.jpg`, `
+      : `<img src="file://${ROOT}/images/${id}.webp" style="width:100%;height:100%;object-fit:cover">`;
+    const desc = t['desc_' + id];
+    shot(`images/og/${id}${suffix(lang)}.jpg`, `
 <div class="pattern"></div>
 <div style="position:absolute;left:72px;top:70px;bottom:70px;width:470px;display:flex;flex-direction:column;justify-content:space-between">
-  <div class="url"><i></i>gofabek.github.io/${id}</div>
+  <div class="url"><i></i>gofabek.github.io${dir(lang)}/${id}</div>
   <div>
-    <p class="tag">${uz[p.status]}</p>
+    <p class="tag">${t[p.status]}</p>
     <h1 class="serif" style="font-size:${p.name.length > 14 ? 74 : 96}px;line-height:1;margin-top:14px">${p.name.replace(' (', '<br><span style="font-size:.5em;color:#6b6762">(').replace(/\)$/, ')</span>')}</h1>
   </div>
-  <p style="font-size:24px;color:#6b6762;line-height:1.45">${uz['desc_' + id]}</p>
+  <p style="font-size:${desc.length > 120 ? 21 : 24}px;color:#6b6762;line-height:1.45">${desc}</p>
 </div>
 <div style="position:absolute;right:64px;top:50%;transform:translateY(-50%);width:560px;aspect-ratio:1024/500;border-radius:12px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.45)">${visual}</div>
 <div class="band"></div>`, 1200, 630);
+  }
 }
 
 /* ---------- Icons ---------- */

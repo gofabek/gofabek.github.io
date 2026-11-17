@@ -458,6 +458,61 @@ async function loadCommits() {
   } catch (e) {}
 }
 
+/* ---------- Motion: hero parallax + counting numbers ---------- */
+
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const heroSection = document.querySelector('.hero');
+
+if (heroSection && !reduceMotion && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  let frame = 0;
+  heroSection.addEventListener('pointermove', (event) => {
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      const rect = heroSection.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - 0.5;
+      const y = (event.clientY - rect.top) / rect.height - 0.5;
+      heroSection.style.setProperty('--px', `${(x * -24).toFixed(1)}px`);
+      heroSection.style.setProperty('--py', `${(y * -24).toFixed(1)}px`);
+      frame = 0;
+    });
+  });
+  heroSection.addEventListener('pointerleave', () => {
+    heroSection.style.removeProperty('--px');
+    heroSection.style.removeProperty('--py');
+  });
+}
+
+function countUp(node) {
+  const match = node.textContent.trim().match(/^(\d+)(\+?)$/);
+  if (!match) return;
+  const target = Number(match[1]);
+  const suffix = match[2];
+  const duration = Math.min(1600, 600 + target);
+  const start = performance.now();
+  const tick = (now) => {
+    const p = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - p, 3);
+    node.textContent = `${Math.round(target * eased)}${suffix}`;
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+const counters = document.querySelectorAll('.stats strong:not([data-i18n]), .facts strong');
+if (counters.length && !reduceMotion && 'IntersectionObserver' in window) {
+  const counterObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        countUp(entry.target);
+        counterObserver.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.6 }
+  );
+  counters.forEach((node) => counterObserver.observe(node));
+}
+
 /* ---------- Reveal on scroll ---------- */
 
 const revealItems = document.querySelectorAll('.reveal');

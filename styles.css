@@ -2688,3 +2688,303 @@ a.play-btn:active {
     padding-inline: 1rem;
   }
 }
+
+/* =========================================================
+   Enrichment: motion & detail (same palette and fonts)
+   ========================================================= */
+
+/* ---------- Hero: drifting girih + pointer parallax ---------- */
+
+.hero::before {
+  translate: var(--px, 0) var(--py, 0);
+  transition: translate 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  animation: girih-drift 60s linear infinite;
+}
+
+@keyframes girih-drift {
+  from {
+    -webkit-mask-position: 0 0, 0 0;
+    mask-position: 0 0, 0 0;
+  }
+  to {
+    -webkit-mask-position: 96px 48px, 0 0;
+    mask-position: 96px 48px, 0 0;
+  }
+}
+
+/* Accent underline drawn under the highlighted words */
+.hero-title em {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 92%;
+  background-size: 0% 0.06em;
+  animation: em-line 1.2s 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+@keyframes em-line {
+  to { background-size: 100% 0.06em; }
+}
+
+/* Photo: rotating girih star behind the frame */
+.hero-photo {
+  position: relative;
+  overflow: visible;
+  background: none;
+}
+
+.hero-photo picture {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-soft);
+}
+
+.hero-photo::before,
+.hero-photo::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.hero-photo::before {
+  z-index: 1;
+  top: -34px;
+  left: -34px;
+  width: 76px;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.18));
+  aspect-ratio: 1;
+  background: var(--accent);
+  clip-path: polygon(50% 0, 64.6% 14.6%, 85.4% 14.6%, 85.4% 35.4%, 100% 50%, 85.4% 64.6%, 85.4% 85.4%, 64.6% 85.4%, 50% 100%, 35.4% 85.4%, 14.6% 85.4%, 14.6% 64.6%, 0 50%, 14.6% 35.4%, 14.6% 14.6%, 35.4% 14.6%);
+  animation: star-spin 40s linear infinite;
+}
+
+.hero-photo::after {
+  left: -18px;
+  bottom: -18px;
+  width: 46%;
+  height: 34%;
+  border-left: 1px solid var(--accent);
+  border-bottom: 1px solid var(--accent);
+  border-radius: 0 0 0 6px;
+  opacity: 0.7;
+}
+
+@keyframes star-spin {
+  to { rotate: 360deg; }
+}
+
+/* ---------- Skills marquee ---------- */
+
+.marquee {
+  overflow: hidden;
+  border-top: 1px solid var(--line);
+  padding: 1.15rem 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 45s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+.marquee-track span {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.25rem;
+  padding-right: 2.25rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(1.5rem, 3vw, 2.3rem);
+  line-height: 1.1;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.marquee-track span::after {
+  content: "";
+  width: 0.45em;
+  height: 0.45em;
+  background: var(--accent);
+  clip-path: polygon(50% 0, 64.6% 14.6%, 85.4% 14.6%, 85.4% 35.4%, 100% 50%, 85.4% 64.6%, 85.4% 85.4%, 64.6% 85.4%, 50% 100%, 35.4% 85.4%, 14.6% 85.4%, 14.6% 64.6%, 0 50%, 14.6% 35.4%, 14.6% 14.6%, 35.4% 14.6%);
+}
+
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+/* ---------- Project cards ---------- */
+
+.project-grid {
+  counter-reset: project;
+}
+
+.project-grid > * {
+  min-width: 0;
+}
+
+.project-card {
+  counter-increment: project;
+  padding: 0.9rem 0.9rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bg-soft) 45%, var(--bg));
+  transition: border-color 0.3s ease, box-shadow 0.4s ease, translate 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.project-card .project-visual {
+  border-radius: 9px;
+}
+
+.project-card:hover .project-visual {
+  transform: none;
+}
+
+.project-visual img {
+  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.project-visual::after {
+  content: counter(project, decimal-leading-zero);
+  position: absolute;
+  top: 0.7rem;
+  left: 0.7rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(13, 13, 15, 0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.project-body {
+  padding: 0 0.3rem;
+}
+
+@media (hover: hover) {
+  .project-card:hover {
+    translate: 0 -4px;
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+    box-shadow: 0 26px 44px -30px rgba(0, 0, 0, 0.45);
+  }
+
+  .project-card:hover .project-visual img {
+    transform: scale(1.04);
+  }
+}
+
+@media (min-width: 761px) {
+  .project-card.is-featured,
+  .project-grid > .project-card:last-child:nth-child(even) {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: center;
+    padding: 1.1rem;
+  }
+
+  .project-grid > .project-card:last-child:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  }
+
+  .project-grid > .project-card:last-child:nth-child(even) .project-visual {
+    order: 2;
+  }
+
+  .project-card.is-featured .project-body h3 {
+    font-size: 2.6rem;
+  }
+
+  .project-card.is-featured .project-body > p {
+    font-size: 1rem;
+  }
+}
+
+/* ---------- Scroll progress under the header ---------- */
+
+@supports (animation-timeline: scroll()) {
+  .site-header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--accent);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    animation: scroll-progress linear both;
+    animation-timeline: scroll(root);
+  }
+
+  @keyframes scroll-progress {
+    to { transform: scaleX(1); }
+  }
+}
+
+/* ---------- Buttons ---------- */
+
+.btn-primary {
+  transition: transform 0.2s ease, background-color 0.25s ease, color 0.25s ease;
+}
+
+@media (hover: hover) {
+  .btn-primary:hover {
+    background: var(--accent);
+    color: #fff;
+  }
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 760px) {
+  .hero-photo::before {
+    top: -20px;
+    left: 14px;
+    width: 52px;
+  }
+
+  .hero-photo::after {
+    display: none;
+  }
+
+  .marquee {
+    padding: 0.9rem 0;
+  }
+
+  .project-card {
+    padding: 0.7rem 0.7rem 1rem;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero::before,
+  .hero-photo::before,
+  .marquee-track,
+  .site-header::after {
+    animation: none;
+  }
+
+  .hero-title em {
+    animation: none;
+    background-size: 100% 0.06em;
+  }
+
+  .marquee {
+    overflow-x: auto;
+  }
+}

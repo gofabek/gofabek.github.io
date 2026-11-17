@@ -113,7 +113,9 @@ const translations = {
     nav_blog: 'Maqolalar',
     cv_present: 'hozirgacha',
     cv_name: 'Soliyev Gʻofur',
-    cv_uni: 'Jizzax politexnika instituti (JizPI)'
+    cv_uni: 'Jizzax politexnika instituti (JizPI)',
+    og_role: 'Mobil va web dasturchi',
+    og_skills: 'Android ilovalar · Veb-saytlar · Telegram botlar'
   },
   en: {
     nav_about: 'About',
@@ -228,7 +230,9 @@ const translations = {
     nav_blog: 'Articles',
     cv_present: 'present',
     cv_name: 'Gʻofur Soliyev',
-    cv_uni: 'Jizzakh Polytechnic Institute (JizPI)'
+    cv_uni: 'Jizzakh Polytechnic Institute (JizPI)',
+    og_role: 'Mobile & web developer',
+    og_skills: 'Android apps · Websites · Telegram bots'
   },
   ru: {
     nav_about: 'Обо мне',
@@ -343,7 +347,9 @@ const translations = {
     nav_blog: 'Статьи',
     cv_present: 'по настоящее время',
     cv_name: 'Гофур Солиев',
-    cv_uni: 'Джизакский политехнический институт (JizPI)'
+    cv_uni: 'Джизакский политехнический институт (JizPI)',
+    og_role: 'Мобильный и веб-разработчик',
+    og_skills: 'Android-приложения · Сайты · Telegram-боты'
   },
   kk: {
     nav_about: 'Мен туралы',
@@ -458,7 +464,9 @@ const translations = {
     nav_blog: 'Мақалалар',
     cv_present: 'қазірге дейін',
     cv_name: 'Ғофур Солиев',
-    cv_uni: 'Жизақ политехникалық институты (JizPI)'
+    cv_uni: 'Жизақ политехникалық институты (JizPI)',
+    og_role: 'Мобильді және веб-әзірлеуші',
+    og_skills: 'Android қосымшалары · Веб-сайттар · Telegram боттары'
   }
 };
 
