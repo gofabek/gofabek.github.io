@@ -1913,13 +1913,6 @@ a.play-btn:active {
 
 /* ---------- Now ---------- */
 
-.now-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 2.5rem;
-  align-items: start;
-}
-
 .now-list {
   list-style: none;
   margin: 0;
@@ -1952,71 +1945,6 @@ a.play-btn:active {
 
 @keyframes now-pulse {
   50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); }
-}
-
-.gh-box {
-  padding: 1.4rem 1.5rem;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--bg-soft) 55%, transparent);
-}
-
-.gh-box[hidden] {
-  display: none;
-}
-
-.gh-title {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  font-family: var(--sans);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.gh-title .icon {
-  width: 16px;
-  height: 16px;
-  fill: currentColor;
-}
-
-.gh-commits {
-  list-style: none;
-  margin: 1rem 0 1.1rem;
-  padding: 0;
-}
-
-.gh-commits li {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.6rem 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 0.875rem;
-}
-
-.gh-commits a {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.gh-commits a:hover {
-  color: var(--accent);
-}
-
-.gh-commits time {
-  flex-shrink: 0;
-  font-size: 0.78rem;
-  color: var(--muted);
-}
-
-.gh-profile {
-  font-size: 0.85rem;
 }
 
 /* ---------- Project pages ---------- */
@@ -2157,12 +2085,6 @@ a.play-btn:active {
   transform: translateY(-4px);
 }
 
-@media (max-width: 960px) {
-  .now-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
 @media (max-width: 760px) {
   .pp {
     padding: 1.25rem 0 3.5rem;
@@ -2214,9 +2136,6 @@ a.play-btn:active {
     justify-content: center;
   }
 
-  .gh-box {
-    padding: 1.2rem 1.1rem;
-  }
 }
 
 @media (hover: none) {

@@ -52,7 +52,6 @@ function setLanguage(lang) {
   });
 
   if (typeof currentProject !== 'undefined' && currentProject) renderProject(currentProject);
-  if (typeof renderCommits === 'function') renderCommits();
 
   if (themeToggle && strings.theme_toggle) {
     themeToggle.setAttribute('aria-label', strings.theme_toggle);
@@ -392,72 +391,6 @@ function openFromHash() {
   if (PROJECTS[id] && currentProject !== id) openProject(id);
 }
 
-/* ---------- Latest commits (GitHub) ---------- */
-
-const ghList = document.querySelector('.gh-commits');
-let ghCommits = null;
-
-const UZ_AGO = { year: 'yil', month: 'oy', week: 'hafta', day: 'kun', hour: 'soat', minute: 'daqiqa' };
-
-function timeAgo(date) {
-  const diff = (Date.now() - new Date(date)) / 1000;
-  const units = [['year', 31536000], ['month', 2592000], ['week', 604800], ['day', 86400], ['hour', 3600], ['minute', 60]];
-  const [unit, sec] = units.find(([, s]) => diff >= s) || ['minute', 60];
-  const n = Math.max(1, Math.round(diff / sec));
-  // ICU has no proper Uzbek relative-time data in many browsers, so Uzbek is formatted by hand.
-  if (root.lang === 'uz') return diff < 60 ? 'hozirgina' : `${n} ${UZ_AGO[unit]} oldin`;
-  try {
-    return new Intl.RelativeTimeFormat(root.lang, { numeric: 'auto' }).format(-n, unit);
-  } catch (e) {
-    return new Date(date).toLocaleDateString();
-  }
-}
-
-function renderCommits() {
-  if (!ghList || !ghCommits) return;
-  ghList.replaceChildren(
-    ...ghCommits.map((c) => {
-      const li = el('li');
-      const a = el('a', '', c.message);
-      a.href = c.url;
-      a.target = '_blank';
-      a.rel = 'noreferrer';
-      const time = el('time', '', timeAgo(c.date));
-      time.dateTime = c.date;
-      li.append(a, time);
-      return li;
-    })
-  );
-  ghList.closest('.gh-box').hidden = false;
-}
-
-async function loadCommits() {
-  if (!ghList) return;
-  const cacheKey = 'gh-commits';
-  try {
-    const cached = JSON.parse(sessionStorage.getItem(cacheKey) || 'null');
-    if (cached) {
-      ghCommits = cached;
-      renderCommits();
-      return;
-    }
-  } catch (e) {}
-  try {
-    const response = await fetch('https://api.github.com/repos/gofabek/gofabek.github.io/commits?per_page=4');
-    if (!response.ok) return;
-    const data = await response.json();
-    ghCommits = data.map((c) => ({
-      message: c.commit.message.split('\n')[0],
-      date: c.commit.author.date,
-      url: c.html_url
-    }));
-    try {
-      sessionStorage.setItem(cacheKey, JSON.stringify(ghCommits));
-    } catch (e) {}
-    renderCommits();
-  } catch (e) {}
-}
-
 /* ---------- Motion: hero parallax + counting numbers ---------- */
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -578,4 +511,3 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 
 openFromHash();
 window.addEventListener('hashchange', openFromHash);
-loadCommits();
