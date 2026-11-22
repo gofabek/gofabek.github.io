@@ -327,7 +327,7 @@ function renderProject(id) {
     a.rel = 'noreferrer';
     links.append(a);
   }
-  links.prepend(playButton(p));
+  if (p.store) links.prepend(playButton(p));
   if (p.bot) {
     const bot = el('a', 'play-btn');
     bot.innerHTML = `${TG_ICON}<span>${t('bot_open')}</span>`;
@@ -335,6 +335,14 @@ function renderProject(id) {
     bot.target = '_blank';
     bot.rel = 'noreferrer';
     links.prepend(bot);
+  }
+  if (p.url) {
+    const site = el('a', 'play-btn');
+    site.innerHTML = `${WEB_ICON}<span>${t('site_open')}</span>`;
+    site.href = p.url;
+    site.target = '_blank';
+    site.rel = 'noopener';
+    links.prepend(site);
   }
   const page = el('a', 'btn-link', `${t('project_page')} →`);
   page.href = `${id}/`;
@@ -345,6 +353,8 @@ function renderProject(id) {
 const PLAY_ICON =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 1.8 13.8 12 3.6 22.2a1.6 1.6 0 0 1-.6-1.3V3.1c0-.5.2-1 .6-1.3Zm11.3 11.3 2.6 2.6-11.4 6.5 8.8-9.1Zm3.9-3.9 3 1.7c1 .6 1 1.6 0 2.2l-3 1.7-2.8-2.8 2.8-2.8ZM6.1 1.8l11.4 6.5-2.6 2.6-8.8-9.1Z"/></svg>';
 
+const WEB_ICON =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2Zm6.93 6h-2.95a15.6 15.6 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.92 8ZM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96ZM4.26 14a8.2 8.2 0 0 1 0-4h3.38a16.5 16.5 0 0 0 0 4H4.26Zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.99 7.99 0 0 1 5.08 16Zm2.95-8H5.08a7.99 7.99 0 0 1 4.33-3.56A15.6 15.6 0 0 0 8.03 8ZM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96ZM14.34 14H9.66a14.7 14.7 0 0 1 0-4h4.68a14.7 14.7 0 0 1 0 4Zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56ZM16.36 14a16.5 16.5 0 0 0 0-4h3.38a8.2 8.2 0 0 1 0 4h-3.38Z"/></svg>';
 const TG_ICON =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.3 18.7 19.5c-.2 1-.9 1.3-1.7.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.5 13.3 1.8 11.8c-1-.3-1-1 .2-1.5L20.5 3.2c.9-.3 1.6.2 1.4 1.1Z"/></svg>';
 
