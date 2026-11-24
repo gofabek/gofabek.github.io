@@ -47,11 +47,15 @@ function readPosts(dir, draft) {
       const src = readFileSync(join(full, f), 'utf8');
       const m = src.match(/^<!--\s*(\{[\s\S]*?\})\s*-->/);
       if (!m) throw new Error(`content/${dir}/${f}: missing <!-- {json} --> header`);
-      return { slug: f.replace(/\.html$/, ''), ...JSON.parse(m[1]), body: src.slice(m[0].length).trim(), draft };
+      const meta = JSON.parse(m[1]);
+      return { slug: f.replace(/\.html$/, ''), tags: [], ...meta, draft: draft || meta.draft === true, body: src.slice(m[0].length).trim() };
     });
 }
 
-const posts = [...readPosts('posts', false), ...(WITH_DRAFTS ? readPosts('drafts', true) : [])].sort((a, b) =>
+// A post is a draft if it lives in content/drafts/ (local only) or has "draft": true in its header.
+const posts = [...readPosts('posts', false), ...(WITH_DRAFTS ? readPosts('drafts', true) : [])]
+  .filter((p) => WITH_DRAFTS || !p.draft)
+  .sort((a, b) =>
   b.date.localeCompare(a.date)
 );
 
@@ -62,6 +66,22 @@ if (nextIndex !== index) {
   index = nextIndex;
   writeFileSync(join(ROOT, 'index.html'), index);
   console.log('✓ index.html (blog link)');
+}
+
+/* ---------- CV buttons in the contact section ---------- */
+// PDF if files/cv-<lang>.pdf exists, otherwise the printable HTML résumé — so the buttons never 404.
+const CV_ICON =
+  '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zm-1 1.5L18.5 9H13zM8 13h8v1.5H8zm0 3.5h8V18H8zM8 9.5h3V11H8z"/></svg>';
+const cvButton = (file, page, label, hreflang) => {
+  const pdf = existsSync(join(ROOT, 'files', file));
+  return `<a class="btn-link cv-link" href="${pdf ? `/files/${file}` : page}" hreflang="${hreflang}"${pdf ? ' type="application/pdf"' : ''}>${CV_ICON}<span>${label}</span></a>`;
+};
+const cvBlock = `<!-- cv:start --><div class="cv-links">${cvButton('cv-uz.pdf', '/cv/', 'CV (Oʻzbekcha)', 'uz')}${cvButton('cv-en.pdf', '/en/cv/', 'CV (English)', 'en')}</div><!-- cv:end -->`;
+const withCv = index.replace(/<!-- cv:start -->[\s\S]*?<!-- cv:end -->/, cvBlock);
+if (withCv !== index) {
+  index = withCv;
+  writeFileSync(join(ROOT, 'index.html'), index);
+  console.log('✓ index.html (CV buttons)');
 }
 
 /* ---------- Pieces shared with index.html ---------- */
@@ -125,6 +145,7 @@ const shell = ({ headHtml, bodyClass, prefix, main, lang = 'uz', home = prefix }
   </head>
   <body class="${bodyClass}">
     ${GENERATED}
+    <a class="skip-link" href="#home" data-i18n="skip_link">${T[lang].skip_link}</a>
     ${rebase(lang === 'uz' ? headerSrc : headerSrc.replace(/class="lang-btn active"/, 'class="lang-btn"').replace(`class="lang-btn" data-lang="${lang}"`, `class="lang-btn active" data-lang="${lang}"`), home, prefix)}
 
 ${main}
@@ -147,6 +168,8 @@ const WEB_ICON =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2Zm6.93 6h-2.95a15.6 15.6 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.92 8ZM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96ZM4.26 14a8.2 8.2 0 0 1 0-4h3.38a16.5 16.5 0 0 0 0 4H4.26Zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.99 7.99 0 0 1 5.08 16Zm2.95-8H5.08a7.99 7.99 0 0 1 4.33-3.56A15.6 15.6 0 0 0 8.03 8ZM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96ZM14.34 14H9.66a14.7 14.7 0 0 1 0-4h4.68a14.7 14.7 0 0 1 0 4Zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56ZM16.36 14a16.5 16.5 0 0 0 0-4h3.38a8.2 8.2 0 0 1 0 4h-3.38Z"/></svg>';
 const TG_ICON =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.3 18.7 19.5c-.2 1-.9 1.3-1.7.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.5 13.3 1.8 11.8c-1-.3-1-1 .2-1.5L20.5 3.2c.9-.3 1.6.2 1.4 1.1Z"/></svg>';
+const TEST_ICON =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4ZM6 10V7H4v3H1v2h3v3h2v-3h3v-2Z"/></svg>';
 const CATEGORY = { girih: 'GameApplication', koshin: 'GameApplication', bloksxema: 'EducationalApplication', upf: 'UtilitiesApplication', shogird: 'EducationalApplication', shopbot: 'BusinessApplication' };
 
 function visual(id, p, eager, A = '../') {
@@ -194,7 +217,12 @@ function projectPage(id, p, lang) {
     }
   ];
 
+  // Closed-test opt-in: real link, or (with --drafts) a placeholder so the button can be previewed.
+  const testUrl = p.test || (WITH_DRAFTS && 'test' in p ? '#TODO_TEST_URL' : '');
   const actions = [
+    testUrl
+      ? `<a class="play-btn test-btn" href="${esc(testUrl)}" target="_blank" rel="noreferrer">${TEST_ICON}<span data-i18n="test_join">${t.test_join}</span></a>`
+      : '',
     isApp
       ? p.play
         ? `<a class="play-btn" href="${esc(p.play)}" target="_blank" rel="noreferrer">${PLAY_ICON}<span data-i18n="play_get">${t.play_get}</span></a>`
@@ -206,11 +234,22 @@ function projectPage(id, p, lang) {
     p.bot
       ? `<a class="play-btn" href="https://t.me/${esc(p.bot)}" target="_blank" rel="noreferrer">${TG_ICON}<span data-i18n="bot_open">${t.bot_open}</span></a>`
       : '',
+    p.github
+      ? `<a class="btn-link" href="${esc(p.github)}" target="_blank" rel="noreferrer">GitHub ↗</a>`
+      : '',
     p.privacy
       ? `<a class="btn-link" href="${esc(p.privacy)}" target="_blank" rel="noreferrer"><span data-i18n="dlg_privacy">${t.dlg_privacy}</span> ↗</a>`
       : ''
   ].filter(Boolean);
 
+  // Texts still marked 'TODO' in i18n.js are hidden on the live site; --drafts shows them for preview.
+  const filled = (key) => {
+    const v = t[key];
+    return v && (WITH_DRAFTS || !/^TODO/.test(v)) ? v : '';
+  };
+  const problem = filled(`prob_${id}`);
+  const solution = filled(`sol_${id}`);
+  const learned = filled(`learned_${id}`);
   const shots = Array.from({ length: p.shots }, (_, i) =>
     `<img src="${A}images/shots/${id}-${i + 1}.webp" alt="${esc(p.name)} — ${i + 1}" width="480" height="${p.shotHeight}" loading="lazy" decoding="async" />`
   ).join('\n            ');
@@ -234,7 +273,11 @@ function projectPage(id, p, lang) {
     headHtml: head({ title, desc, path, image: ogImage(id, lang), imageAlt: p.name, prefix: A, ld, lang, alt: `${slug(id)}/` }),
     main: `    <main id="home" class="container pp">
       <nav class="pp-crumbs" aria-label="Breadcrumb">
-        <a class="btn-link" href="../#projects">← <span data-i18n="pp_back">${t.pp_back}</span></a>
+        <ol>
+          <li><a href="../" data-i18n="pp_home">${t.pp_home}</a></li>
+          <li><a href="../#projects" data-i18n="projects_title">${t.projects_title}</a></li>
+          <li aria-current="page">${esc(p.name)}</li>
+        </ol>
       </nav>
 
       <header class="pp-hero">
@@ -244,6 +287,7 @@ function projectPage(id, p, lang) {
           <p class="pp-lead" data-i18n="desc_${id}">${desc}</p>
           ${actions.length ? `<div class="pp-actions">\n            ${actions.join('\n            ')}\n          </div>` : ''}
           ${isApp && !p.play ? `<p class="pd-soon" data-i18n="dlg_soon">${t.dlg_soon}</p>` : ''}
+          ${testUrl ? `<p class="test-note" data-i18n="test_note">${t.test_note}</p>` : ''}
         </div>
         ${visual(id, p, true, A)}
       </header>
@@ -251,7 +295,18 @@ function projectPage(id, p, lang) {
       <section class="pp-section">
         <p class="pp-long" data-i18n="long_${id}">${t[`long_${id}`]}</p>
       </section>
-${p.shots ? `
+${problem && solution ? `
+      <section class="pp-section pd-cols pp-cols pp-ps">
+        <div>
+          <h2 class="pp-h" data-i18n="pp_problem">${t.pp_problem}</h2>
+          <p class="pp-text" data-i18n="prob_${id}">${esc(problem)}</p>
+        </div>
+        <div>
+          <h2 class="pp-h"><span aria-hidden="true">→ </span><span data-i18n="pp_solution">${t.pp_solution}</span></h2>
+          <p class="pp-text" data-i18n="sol_${id}">${esc(solution)}</p>
+        </div>
+      </section>
+` : ''}${p.shots ? `
       <section class="pp-section" aria-labelledby="pp-shots-title">
         <h2 class="pp-h" id="pp-shots-title" data-i18n="pp_shots">${t.pp_shots}</h2>
         <div class="pd-shots pp-shots" tabindex="0">
@@ -272,6 +327,12 @@ ${p.shots ? `
         </div>
       </section>
 
+${learned ? `
+      <section class="pp-section" aria-labelledby="pp-learned-title">
+        <h2 class="pp-h" id="pp-learned-title" data-i18n="pp_learned">${t.pp_learned}</h2>
+        <p class="pp-text" data-i18n="learned_${id}">${esc(learned)}</p>
+      </section>
+` : ''}
       <section class="pp-section" aria-labelledby="pp-other-title">
         <h2 class="pp-h" id="pp-other-title" data-i18n="pp_other">${t.pp_other}</h2>
         <div class="pp-others">${others}
@@ -445,6 +506,15 @@ const fmtDate = (d) => {
   return `${day}-${months[m - 1]}, ${y}`;
 };
 
+const tagList = (tags) => (tags.length ? `<ul class="pd-tech post-tags">${tags.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : '');
+
+// Syntax highlighting: Prism (only on posts that contain <pre><code class="language-…">).
+// Languages load on demand (autoloader); colours come from styles.css so they follow the theme.
+const PRISM = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0';
+const prismScripts = `
+    <script src="${PRISM}/components/prism-core.min.js" defer></script>
+    <script src="${PRISM}/plugins/autoloader/prism-autoloader.min.js" defer></script>`;
+
 rmSync(join(ROOT, 'blog'), { recursive: true, force: true });
 if (posts.length) {
   const cards = posts
@@ -454,6 +524,7 @@ if (posts.length) {
             <time datetime="${p.date}">${fmtDate(p.date)}</time>${p.draft ? ' <span class="draft-badge">qoralama</span>' : ''}
             <h2>${esc(p.title)}</h2>
             <p>${esc(p.description)}</p>
+            ${tagList(p.tags)}
           </a>
         </li>`)
     .join('');
@@ -488,15 +559,36 @@ if (posts.length) {
           prefix: '../../',
           type: 'article',
           noindex: p.draft,
-          ld: { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: p.title, description: p.description, datePublished: p.date, image: `${SITE}/${image}`, author: PERSON, inLanguage: 'uz' }
+          ld: {
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting', // a subtype of Article
+            headline: p.title,
+            description: p.description,
+            datePublished: p.date,
+            dateModified: p.updated || p.date,
+            image: `${SITE}/${image}`,
+            author: PERSON,
+            publisher: PERSON,
+            mainEntityOfPage: `${SITE}/blog/${p.slug}/`,
+            ...(p.tags.length ? { keywords: p.tags.join(', ') } : {}),
+            inLanguage: 'uz'
+          },
+          extra: /<code class="language-/.test(p.body) ? prismScripts : ''
         }),
         main: `    <main id="home" class="container post">
-      <nav class="pp-crumbs" aria-label="Breadcrumb"><a class="btn-link" href="../">← <span data-i18n="nav_blog">${uz.nav_blog}</span></a></nav>
+      <nav class="pp-crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../../" data-i18n="pp_home">${uz.pp_home}</a></li>
+          <li><a href="../" data-i18n="nav_blog">${uz.nav_blog}</a></li>
+          <li aria-current="page">${esc(p.title)}</li>
+        </ol>
+      </nav>
       <article class="post-body">
         <header>
           <time datetime="${p.date}">${fmtDate(p.date)}</time>${p.draft ? ' <span class="draft-badge">qoralama — saytda ko‘rinmaydi</span>' : ''}
           <h1>${esc(p.title)}</h1>
           <p class="post-lead">${esc(p.description)}</p>
+          ${tagList(p.tags)}
         </header>
         ${p.body}
       </article>

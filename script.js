@@ -52,6 +52,7 @@ function setLanguage(lang) {
   });
 
   if (typeof currentProject !== 'undefined' && currentProject) renderProject(currentProject);
+  renderPrices();
 
   if (themeToggle && strings.theme_toggle) {
     themeToggle.setAttribute('aria-label', strings.theme_toggle);
@@ -85,6 +86,17 @@ langButtons.forEach((button) => {
     setLanguage(lang);
   });
 });
+
+/* ---------- Service prices (PRICES in i18n.js; empty → line stays hidden) ---------- */
+
+function renderPrices() {
+  if (typeof PRICES === 'undefined') return;
+  document.querySelectorAll('.service-price[data-price]').forEach((node) => {
+    const price = PRICES[node.dataset.price];
+    node.hidden = !price;
+    if (price) node.textContent = t('svc_price').replace('{price}', price);
+  });
+}
 
 /* ---------- Theme with ink transition ---------- */
 
@@ -348,7 +360,31 @@ function renderProject(id) {
   page.href = `${p.page || id}/`;
   links.append(page);
   if (p.store && !p.play) links.append(el('p', 'pd-soon', t('dlg_soon')));
+  if (p.test) {
+    links.prepend(testButton(p.test));
+    links.append(el('p', 'test-note', t('test_note')));
+  }
 }
+
+const TEST_ICON =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4ZM6 10V7H4v3H1v2h3v3h2v-3h3v-2Z"/></svg>';
+
+function testButton(url) {
+  const btn = el('a', 'play-btn test-btn');
+  btn.innerHTML = `${TEST_ICON}<span>${t('test_join')}</span>`;
+  btn.href = url;
+  btn.target = '_blank';
+  btn.rel = 'noreferrer';
+  return btn;
+}
+
+// "Join the test" on project cards: hidden until PROJECTS.<id>.test has a link.
+document.querySelectorAll('.test-cta[data-test]').forEach((box) => {
+  const url = PROJECTS[box.dataset.test] && PROJECTS[box.dataset.test].test;
+  if (!url) return;
+  box.querySelector('a').href = url;
+  box.hidden = false;
+});
 
 const PLAY_ICON =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 1.8 13.8 12 3.6 22.2a1.6 1.6 0 0 1-.6-1.3V3.1c0-.5.2-1 .6-1.3Zm11.3 11.3 2.6 2.6-11.4 6.5 8.8-9.1Zm3.9-3.9 3 1.7c1 .6 1 1.6 0 2.2l-3 1.7-2.8-2.8 2.8-2.8ZM6.1 1.8l11.4 6.5-2.6 2.6-8.8-9.1Z"/></svg>';
@@ -512,8 +548,28 @@ if (GOATCOUNTER && location.hostname.endsWith('github.io')) {
   document.head.append(gc);
 }
 
+/* ---------- Analytics (Google Analytics 4) ---------- */
+
+// Measurement ID from analytics.google.com → Admin → Data streams, e.g. 'G-ABC123XYZ'.
+// Empty → the GA script is not loaded at all. Counts only on the live site (github.io), not locally.
+const GA_ID = ''; // TODO_GA_ID
+
+if (GA_ID && location.hostname.endsWith('github.io')) {
+  const ga = document.createElement('script');
+  ga.async = true;
+  ga.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_ID)}`;
+  document.head.append(ga);
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () {
+    window.dataLayer.push(arguments);
+  };
+  window.gtag('js', new Date());
+  window.gtag('config', GA_ID);
+}
+
 function track(event) {
   if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: event, event: true });
+  if (window.gtag) window.gtag('event', event);
 }
 
 /* ---------- Offline support ---------- */
