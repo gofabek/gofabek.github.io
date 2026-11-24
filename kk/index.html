@@ -49,7 +49,7 @@
           "@type": "CollegeOrUniversity",
           "name": "Jizzax politexnika instituti (JizPI)"
         },
-        "knowsAbout": ["Android", "Kotlin", "Jetpack Compose", "Godot", "GDScript", "JavaScript", "Node.js", "Telegram bot", "Firebase", "Web dasturlash"],
+        "knowsAbout": ["Android", "Kotlin", "Jetpack Compose", "Godot", "GDScript", "JavaScript", "Node.js", "Python", "FastAPI", "PostgreSQL", "React", "Docker", "Telegram bot", "Firebase", "Web dasturlash"],
         "sameAs": [
           "https://t.me/s_gofur",
           "https://instagram.com/just_gofur",
@@ -83,6 +83,7 @@
           <a href="#about" data-i18n="nav_about">Мен туралы</a>
           <a href="#skills" data-i18n="nav_skills">Дағдылар</a>
           <a href="#projects" data-i18n="nav_projects">Жобалар</a>
+          <a href="#services" data-i18n="nav_services">Қызметтер</a>
           <a href="#path" data-i18n="tl_title">Менің жолым</a>
           <!-- blog:start --><!-- blog:end -->
           <a href="#contact" data-i18n="nav_contact">Байланыс</a>
@@ -147,14 +148,14 @@
 
         <ul class="stats reveal" aria-label="Quick facts">
           <li><strong>3</strong><span data-i18n="stat_apps">Android қосымша</span></li>
-          <li><strong>1</strong><span data-i18n="stat_bot">Telegram бот</span></li>
+          <li><strong>2</strong><span data-i18n="stat_bot">Telegram бот</span></li>
           <li><strong>1000+</strong><span data-i18n="stat_levels">Girih деңгейлері</span></li>
           <li><strong data-i18n="profile_location_value">Хазарасп, Хорезм</strong><span data-i18n="profile_location">Орналасуы</span></li>
         </ul>
       </section>
 
       <div class="marquee" aria-hidden="true">
-        <div class="marquee-track"><span>Kotlin</span><span>Jetpack Compose</span><span>Android SDK</span><span>Godot / GDScript</span><span>JavaScript</span><span>Node.js</span><span>Telegram Bot API</span><span>Firebase</span><span>AdMob</span><span>Play Billing</span><span>HTML / CSS</span><span>Git</span><span>Kotlin</span><span>Jetpack Compose</span><span>Android SDK</span><span>Godot / GDScript</span><span>JavaScript</span><span>Node.js</span><span>Telegram Bot API</span><span>Firebase</span><span>AdMob</span><span>Play Billing</span><span>HTML / CSS</span><span>Git</span></div>
+        <div class="marquee-track"><span>Kotlin</span><span>Jetpack Compose</span><span>Android SDK</span><span>Godot / GDScript</span><span>JavaScript</span><span>Node.js</span><span>Telegram Bot API</span><span>Python</span><span>FastAPI</span><span>PostgreSQL</span><span>React</span><span>Docker</span><span>Firebase</span><span>AdMob</span><span>Play Billing</span><span>HTML / CSS</span><span>Git</span><span>Kotlin</span><span>Jetpack Compose</span><span>Android SDK</span><span>Godot / GDScript</span><span>JavaScript</span><span>Node.js</span><span>Telegram Bot API</span><span>Python</span><span>FastAPI</span><span>PostgreSQL</span><span>React</span><span>Docker</span><span>Firebase</span><span>AdMob</span><span>Play Billing</span><span>HTML / CSS</span><span>Git</span></div>
       </div>
 
       <section id="about" class="section container">
@@ -188,6 +189,11 @@
               <li>JavaScript</li>
               <li>Node.js</li>
               <li>Telegram Bot API</li>
+              <li>Python</li>
+              <li>FastAPI</li>
+              <li>PostgreSQL</li>
+              <li>React</li>
+              <li>Docker</li>
               <li>Firebase</li>
               <li>AdMob</li>
               <li>Play Billing</li>
@@ -201,7 +207,7 @@
       <section id="projects" class="section container">
         <div class="section-head reveal">
           <p class="label"><span>3</span><span data-i18n="projects_title">Жобалар</span></p>
-          <h2 data-i18n="projects_subtitle">Қосымшалар, бот және оқу платформасы.</h2>
+          <h2 data-i18n="projects_subtitle">Қосымшалар, боттар және оқу платформасы.</h2>
         </div>
 
         <div class="project-grid">
@@ -225,10 +231,29 @@
           </article>
 
           <article class="project-card reveal">
+            <div class="project-visual visual-shopbot" aria-hidden="true"><div class="sb-chat"><span class="sb-row"><i>Cappuccino</i><b>×2</b></span><span class="sb-row"><i>Croissant</i><b>×1</b></span><span class="sb-row sb-total"><i>Σ</i><b>54 000</b></span></div><span class="sb-arrow">→</span><div class="sb-order"><small>#128</small><b>✓</b></div></div>
+            <div class="project-body">
+              <span class="tag" data-i18n="status_saas">Telegram бот · SaaS</span>
+              <h3><a class="project-link" href="shopbot/">Shop Bot</a></h3>
+              <p data-i18n="desc_shopbot">Кафе, дүкен және салондарға арналған Telegram тапсырыс жүйесі: клиент ботта тапсырыс береді, иесі мәзірді Mini App арқылы басқарады.</p>
+              <ul class="project-features">
+                <li data-i18n="f_shopbot_1">Мәзір, себет және тапсырыс — боттың өзінде</li>
+                <li data-i18n="f_shopbot_2">Иесіне арналған Mini App: мәзір, баға және суреттер</li>
+                <li data-i18n="f_shopbot_3">Бір сервер — жүздеген бизнес (multi-tenant)</li>
+                <li data-i18n="f_shopbot_4">Шифрланған токендер және HMAC тексеруі</li>
+              </ul>
+              <div class="project-foot">
+                <span class="project-tech">Python · FastAPI · React</span>
+                <button type="button" class="project-open" data-project="shopbot"><span data-i18n="project_more">Толығырақ</span> <span aria-hidden="true">→</span></button>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card reveal">
             <div class="project-visual"><img src="../images/shogird.webp" alt="Shogird" width="800" height="391" loading="lazy" decoding="async" /></div>
             <div class="project-body">
               <span class="tag" data-i18n="status_web">Веб-сайт · Жұмыс істейді</span>
-              <h3><a class="project-link" href="shogird/">Shogird</a></h3>
+              <h3><a class="project-link" href="shogird-loyiha/">Shogird</a></h3>
               <p data-i18n="desc_shogird">Бағдарламалауды өзбек тілінде тікелей браузерде үйрететін тегін платформа: Python және олимпиада курстары.</p>
               <ul class="project-features">
                 <li data-i18n="f_shogird_1">39 сабақ және автоматты тексерілетін 99 жаттығу</li>
@@ -302,9 +327,59 @@
         </div>
       </section>
 
+      <section id="services" class="section container">
+        <div class="section-head reveal">
+          <p class="label"><span>4</span><span data-i18n="nav_services">Қызметтер</span></p>
+          <h2 data-i18n="services_subtitle">Бизнесіңіз үшін не істей аламын.</h2>
+        </div>
+
+        <div class="service-grid">
+          <article class="service-card reveal">
+            <span class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21.9 4.3 18.7 19.5c-.2 1-.9 1.3-1.7.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.5 13.3 1.8 11.8c-1-.3-1-1 .2-1.5L20.5 3.2c.9-.3 1.6.2 1.4 1.1Z"/></svg></span>
+            <h3 data-i18n="svc_bot_title">Telegram бот</h3>
+            <p data-i18n="svc_bot_desc">Тапсырыс, дүкен, жазылу немесе қолдау боты — клиенттеріңіз күнде ашатын Telegram-да.</p>
+            <ul class="project-features">
+              <li data-i18n="svc_bot_1">Мәзір, себет және тапсырыстар</li>
+              <li data-i18n="svc_bot_2">Mini App басқару панелі</li>
+              <li data-i18n="svc_bot_3">Сервер, домен және іске қосу</li>
+            </ul>
+            <a class="service-example" href="shopbot/"><span data-i18n="svc_example">Мысал</span>: Shop Bot <span aria-hidden="true">→</span></a>
+          </article>
+
+          <article class="service-card reveal">
+            <span class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 1H8a3 3 0 0 0-3 3v16a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V4a3 3 0 0 0-3-3Zm1 19a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1Zm-5-2.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5ZM10 4h4v1.5h-4Z"/></svg></span>
+            <h3 data-i18n="svc_app_title">Android қосымша</h3>
+            <p data-i18n="svc_app_desc">Kotlin және Jetpack Compose-та жылдам қосымша немесе Godot-та мобильді ойын.</p>
+            <ul class="project-features">
+              <li data-i18n="svc_app_1">Заманауи, ыңғайлы интерфейс</li>
+              <li data-i18n="svc_app_2">Firebase, жарнама және ішкі сатып алулар</li>
+              <li data-i18n="svc_app_3">Google Play-ге шығару</li>
+            </ul>
+            <a class="service-example" href="girih/"><span data-i18n="svc_example">Мысал</span>: Girih <span aria-hidden="true">→</span></a>
+          </article>
+
+          <article class="service-card reveal">
+            <span class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Zm0 16H4V9h16ZM4 7V5h16v2Zm2.5-1.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm2.5 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7 12h6v1.5H7Zm0 3h10v1.5H7Z"/></svg></span>
+            <h3 data-i18n="svc_web_title">Веб-сайт</h3>
+            <p data-i18n="svc_web_desc">Бизнес сайты, лендинг немесе портфолио — жылдам ашылады және телефонда әдемі көрінеді.</p>
+            <ul class="project-features">
+              <li data-i18n="svc_web_1">Мобильге бейім, жылдам</li>
+              <li data-i18n="svc_web_2">SEO және бірнеше тіл</li>
+              <li data-i18n="svc_web_3">Домен мен хостингті баптау</li>
+            </ul>
+            <a class="service-example" href="shogird-loyiha/"><span data-i18n="svc_example">Мысал</span>: Shogird <span aria-hidden="true">→</span></a>
+          </article>
+        </div>
+
+        <div class="service-cta reveal">
+          <p data-i18n="svc_cta_copy">Баға жобаның көлеміне қарай келісіледі. Идеяңызды жазыңыз — бірге талқылаймыз.</p>
+          <a class="btn btn-primary" href="#contact" data-i18n="svc_cta">Жобаны талқылау</a>
+        </div>
+      </section>
+
       <section id="path" class="section container">
         <div class="split">
-          <p class="label reveal"><span>4</span><span data-i18n="tl_title">Менің жолым</span></p>
+          <p class="label reveal"><span>5</span><span data-i18n="tl_title">Менің жолым</span></p>
           <ol class="timeline split-body">
             <li class="reveal">
               <span class="tl-date" data-i18n="tl_1_date">2024</span>
@@ -347,7 +422,7 @@
 
       <section id="now" class="section container">
         <div class="split">
-          <p class="label reveal"><span>5</span><span data-i18n="now_title">Қазір</span></p>
+          <p class="label reveal"><span>6</span><span data-i18n="now_title">Қазір</span></p>
           <div class="split-body">
             <h2 class="reveal" data-i18n="now_subtitle">Қазір немен айналысып жүрмін.</h2>
             <ul class="now-list reveal">
@@ -360,7 +435,7 @@
       </section>
 
       <section id="contact" class="section container contact">
-        <p class="label reveal"><span>6</span><span data-i18n="contact_title">Байланыс</span></p>
+        <p class="label reveal"><span>7</span><span data-i18n="contact_title">Байланыс</span></p>
         <h2 class="contact-title reveal" data-i18n-html="contact_subtitle_html"><em>Маңызды</em> бірдеңе жасайық.</h2>
 
         <div class="contact-grid">

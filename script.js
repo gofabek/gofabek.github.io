@@ -302,7 +302,7 @@ function renderProject(id) {
   shots.hidden = !p.shots;
   for (let i = 1; i <= p.shots; i++) {
     const img = el('img');
-    img.src = `images/shots/${id}-${i}.webp`;
+    img.src = `/images/shots/${id}-${i}.webp`;
     img.alt = `${p.name} — ${i}`;
     img.width = 480;
     img.height = p.shotHeight;
@@ -345,7 +345,7 @@ function renderProject(id) {
     links.prepend(site);
   }
   const page = el('a', 'btn-link', `${t('project_page')} →`);
-  page.href = `${id}/`;
+  page.href = `${p.page || id}/`;
   links.append(page);
   if (p.store && !p.play) links.append(el('p', 'pd-soon', t('dlg_soon')));
 }
@@ -465,8 +465,11 @@ if ('IntersectionObserver' in window) {
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('in');
-          observer.unobserve(entry.target);
+          const item = entry.target;
+          item.classList.add('in');
+          observer.unobserve(item);
+          // The stagger delay is only for the entrance — clear it so hover effects respond at once.
+          item.addEventListener('transitionend', () => (item.style.transitionDelay = ''), { once: true });
         }
       });
     },

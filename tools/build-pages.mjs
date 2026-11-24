@@ -1,5 +1,5 @@
 // Builds every generated page from i18n.js (texts + PROJECTS) and index.html:
-//   girih/ shogird/ koshin/ ...   project pages (one per PROJECTS entry)
+//   girih/ shogird-loyiha/ ...    project pages (one per PROJECTS entry; folder = p.page || id)
 //   en/ ru/ kk/                      translated copies of index.html (for search engines)
 //   cv/                              printable résumé
 //   404.html                         not-found page
@@ -26,6 +26,7 @@ vm.runInContext(readFileSync(join(ROOT, 'i18n.js'), 'utf8') + ';this.T = transla
 const T = ctx.T;
 const uz = T.uz;
 const PROJECTS = ctx.P;
+const slug = (id) => PROJECTS[id].page || id;
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const write = (rel, html) => {
@@ -146,11 +147,15 @@ const WEB_ICON =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2Zm6.93 6h-2.95a15.6 15.6 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.92 8ZM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96ZM4.26 14a8.2 8.2 0 0 1 0-4h3.38a16.5 16.5 0 0 0 0 4H4.26Zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.99 7.99 0 0 1 5.08 16Zm2.95-8H5.08a7.99 7.99 0 0 1 4.33-3.56A15.6 15.6 0 0 0 8.03 8ZM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96ZM14.34 14H9.66a14.7 14.7 0 0 1 0-4h4.68a14.7 14.7 0 0 1 0 4Zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56ZM16.36 14a16.5 16.5 0 0 0 0-4h3.38a8.2 8.2 0 0 1 0 4h-3.38Z"/></svg>';
 const TG_ICON =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.3 18.7 19.5c-.2 1-.9 1.3-1.7.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.5 13.3 1.8 11.8c-1-.3-1-1 .2-1.5L20.5 3.2c.9-.3 1.6.2 1.4 1.1Z"/></svg>';
-const CATEGORY = { girih: 'GameApplication', koshin: 'GameApplication', bloksxema: 'EducationalApplication', upf: 'UtilitiesApplication', shogird: 'EducationalApplication' };
+const CATEGORY = { girih: 'GameApplication', koshin: 'GameApplication', bloksxema: 'EducationalApplication', upf: 'UtilitiesApplication', shogird: 'EducationalApplication', shopbot: 'BusinessApplication' };
 
 function visual(id, p, eager, A = '../') {
   if (id === 'upf') {
     return `<div class="project-visual visual-upf pp-visual" aria-hidden="true"><div class="upf-files"><b>DOCX</b><b>XLSX</b><b>PPTX</b><b>JPG</b></div><span class="upf-arrow">→</span><span class="upf-pdf">PDF</span></div>`;
+  }
+  if (id === 'shopbot') {
+    // Same markup as the Shop Bot card in index.html (no screenshots yet — a drawn chat → order).
+    return `<div class="project-visual visual-shopbot pp-visual" aria-hidden="true"><div class="sb-chat"><span class="sb-row"><i>Cappuccino</i><b>×2</b></span><span class="sb-row"><i>Croissant</i><b>×1</b></span><span class="sb-row sb-total"><i>Σ</i><b>54 000</b></span></div><span class="sb-arrow">→</span><div class="sb-order"><small>#128</small><b>✓</b></div></div>`;
   }
   return `<div class="project-visual pp-visual"><img src="${A}images/${id}.webp" alt="${esc(p.name)}" width="800" height="391"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async" /></div>`;
 }
@@ -158,7 +163,7 @@ function visual(id, p, eager, A = '../') {
 function projectPage(id, p, lang) {
   const t = T[lang];
   const A = lang === 'uz' ? '../' : '../../';
-  const path = `${langDir(lang)}${id}/`;
+  const path = `${langDir(lang)}${slug(id)}/`;
   const title = `${p.name} — ${t.cv_name}`;
   const desc = t[`desc_${id}`];
   const isApp = Boolean(p.store);
@@ -214,7 +219,7 @@ function projectPage(id, p, lang) {
   const others = Object.entries(PROJECTS)
     .filter(([k]) => k !== id)
     .map(([k, o]) => `
-          <a class="pp-other" href="../${k}/">
+          <a class="pp-other" href="../${slug(k)}/">
             ${visual(k, o, false, A)}
             <span class="tag" data-i18n="${o.status}">${t[o.status]}</span>
             <span class="pp-other-name">${esc(o.name)}</span>
@@ -226,7 +231,7 @@ function projectPage(id, p, lang) {
     home: '../',
     lang,
     bodyClass: 'project-page',
-    headHtml: head({ title, desc, path, image: ogImage(id, lang), imageAlt: p.name, prefix: A, ld, lang, alt: `${id}/` }),
+    headHtml: head({ title, desc, path, image: ogImage(id, lang), imageAlt: p.name, prefix: A, ld, lang, alt: `${slug(id)}/` }),
     main: `    <main id="home" class="container pp">
       <nav class="pp-crumbs" aria-label="Breadcrumb">
         <a class="btn-link" href="../#projects">← <span data-i18n="pp_back">${t.pp_back}</span></a>
@@ -278,7 +283,7 @@ ${p.shots ? `
 
 for (const lang of LANGS) {
   for (const [id, p] of Object.entries(PROJECTS)) {
-    write(`${langDir(lang)}${id}/index.html`, projectPage(id, p, lang));
+    write(`${langDir(lang)}${slug(id)}/index.html`, projectPage(id, p, lang));
     if (!existsSync(join(ROOT, ogImage(id, lang)))) console.warn(`! ${ogImage(id, lang)} missing — run tools/build-images.mjs`);
   }
 }
@@ -313,7 +318,7 @@ function localize(lang) {
 
   // Relative URLs now live one folder deeper.
   html = html
-    .replace(new RegExp(`\\b(src|href)="(?!https?:|#|mailto:|data:|/|\\.\\./|(?:${[...Object.keys(PROJECTS), 'cv'].join('|')})/)([^"]+)"`, 'g'), '$1="../$2"')
+    .replace(new RegExp(`\\b(src|href)="(?!https?:|#|mailto:|data:|/|\\.\\./|(?:${[...Object.keys(PROJECTS).map(slug), 'cv'].join('|')})/)([^"]+)"`, 'g'), '$1="../$2"')
     .replace(/srcset="([^"]+)"/g, (m, list) => `srcset="${list.replace(/(^|,\s*)(?!https?:|\/)/g, '$1../')}"`);
 
   return html.replace('<body>', `<body>\n    ${GENERATED}`);
@@ -337,7 +342,7 @@ function cvPage(lang) {
   const cvProjects = Object.entries(PROJECTS)
   .map(([id, p]) => `
           <li>
-            <div class="cv-row-head"><h3><a href="../${id}/">${esc(p.name)}</a></h3><span class="cv-meta" data-i18n="${p.status}">${t[p.status]}</span></div>
+            <div class="cv-row-head"><h3><a href="../${slug(id)}/">${esc(p.name)}</a></h3><span class="cv-meta" data-i18n="${p.status}">${t[p.status]}</span></div>
             <p data-i18n="desc_${id}">${t[`desc_${id}`]}</p>
             <p class="cv-tech">${p.tech.map(esc).join(' · ')}</p>
           </li>`)
@@ -507,7 +512,7 @@ const today = new Date().toISOString().slice(0, 10);
 const urls = [
   '',
   ...Object.keys(LOCALES).map((l) => `${l}/`),
-  ...LANGS.flatMap((l) => [...Object.keys(PROJECTS).map((id) => `${langDir(l)}${id}/`), `${langDir(l)}cv/`]),
+  ...LANGS.flatMap((l) => [...Object.keys(PROJECTS).map((id) => `${langDir(l)}${slug(id)}/`), `${langDir(l)}cv/`]),
   ...(posts.some((p) => !p.draft) ? ['blog/', ...posts.filter((p) => !p.draft).map((p) => `blog/${p.slug}/`)] : [])
 ];
 writeFileSync(

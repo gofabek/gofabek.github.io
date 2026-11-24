@@ -1074,6 +1074,13 @@ section[id] {
   transform: none;
 }
 
+/* Cards are revealed too: list their hover transitions here, otherwise .js .reveal wins and hover snaps. */
+.js .project-card.reveal,
+.js .service-card.reveal {
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.3s ease,
+    box-shadow 0.4s ease, translate 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
 /* ---------- Ink theme transition ---------- */
 
 ::view-transition-old(root),
@@ -1335,6 +1342,71 @@ section[id] {
   border-radius: 8px;
   background: #fff;
   color: #d93025;
+}
+
+/* Shop Bot card: drawn chat → order (sizes in em so the small "other projects" card can scale it) */
+.visual-shopbot {
+  background: linear-gradient(135deg, #0f3b33, #1f8a70);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.3em;
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+.sb-chat {
+  display: grid;
+  gap: 0.45em;
+  width: 11.5em;
+}
+
+.sb-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+  padding: 0.55em 0.8em;
+  border-radius: 0.7em 0.7em 0.7em 0.2em;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.sb-row i {
+  font-style: normal;
+  opacity: 0.9;
+}
+
+.sb-total {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.sb-arrow {
+  font-size: 2.4em;
+  opacity: 0.8;
+  transition: transform 0.5s ease;
+}
+
+.project-card:hover .sb-arrow {
+  transform: translateX(6px);
+}
+
+.sb-order {
+  display: grid;
+  place-items: center;
+  gap: 0.2em;
+  padding: 1em 1.2em;
+  border-radius: 0.6em;
+  background: #fff;
+  color: #1f8a70;
+}
+
+.sb-order small {
+  font-size: 0.85em;
+  color: #6b6762;
+}
+
+.sb-order b {
+  font-size: 2em;
+  line-height: 1;
 }
 
 /* ---------- Project dialog ---------- */
@@ -2075,6 +2147,14 @@ a.play-btn:active {
   font-size: 1.1rem;
 }
 
+.pp-other .visual-shopbot {
+  font-size: 0.42rem;
+}
+
+.pp-hero .visual-shopbot {
+  font-size: clamp(0.8rem, 1.4vw, 1.15rem);
+}
+
 .pp-other-name {
   font-family: var(--serif);
   font-size: 1.5rem;
@@ -2737,7 +2817,8 @@ a.play-btn:active {
   transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.project-visual::after {
+/* Numbered badge only on home-page cards — project pages have no counter, so it would read "00". */
+.project-card .project-visual::after {
   content: counter(project, decimal-leading-zero);
   position: absolute;
   top: 0.7rem;
@@ -2860,5 +2941,118 @@ a.play-btn:active {
 
   .marquee {
     overflow-x: auto;
+  }
+}
+
+/* ---------- Services ---------- */
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.service-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.5rem 1.4rem 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bg-soft) 45%, var(--bg));
+  transition: border-color 0.3s ease, translate 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.service-icon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 0.4rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent-ink);
+}
+
+.service-icon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  fill: currentColor;
+}
+
+.service-card h3 {
+  font-size: 1.6rem;
+  line-height: 1.1;
+}
+
+.service-card > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.service-card .project-features {
+  margin-bottom: 0.6rem;
+}
+
+.service-example {
+  margin-top: auto;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.85rem;
+  color: var(--accent-ink);
+}
+
+.service-example span[aria-hidden] {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.service-example:hover span[aria-hidden],
+.service-example:focus-visible span[aria-hidden] {
+  transform: translateX(4px);
+}
+
+.service-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem 2rem;
+  margin-top: 2rem;
+  padding: 1.4rem 1.6rem;
+  border-radius: 14px;
+  background: var(--invert-bg);
+  color: var(--invert-text);
+}
+
+.service-cta p {
+  margin: 0;
+  max-width: 46ch;
+}
+
+.service-cta .btn-primary {
+  flex-shrink: 0;
+  background: var(--accent);
+  color: #fff;
+}
+
+@media (hover: hover) {
+  .service-card:hover {
+    translate: 0 -4px;
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  }
+}
+
+@media (max-width: 960px) {
+  .service-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .service-cta {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.2rem;
   }
 }

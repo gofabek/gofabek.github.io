@@ -83,7 +83,11 @@ for (const lang of LANGS) {
 
   /* ---------- Project cards ---------- */
   for (const [id, p] of Object.entries(ctx.P)) {
-    const visual = id === 'upf'
+    const shopbot = `<div style="width:100%;height:100%;background:linear-gradient(135deg,#0f3b33,#1f8a70);display:flex;align-items:center;justify-content:center;gap:30px;color:#fff;font-weight:600">
+         <div style="display:grid;gap:10px;width:250px">${[['Cappuccino', '×2'], ['Croissant', '×1'], ['Σ', '54 000']].map(([a, b], i) => `<span style="display:flex;justify-content:space-between;font-size:20px;padding:12px 16px;border-radius:12px 12px 12px 4px;background:rgba(255,255,255,${i === 2 ? '.28' : '.14'})"><span style="font-weight:500">${a}</span><b>${b}</b></span>`).join('')}</div>
+         <span style="font-size:48px;opacity:.8">→</span>
+         <span style="display:grid;place-items:center;gap:6px;padding:22px 26px;border-radius:12px;background:#fff;color:#1f8a70"><small style="font-size:18px;color:#6b6762">#128</small><b style="font-size:44px">✓</b></span></div>`;
+    const visual = id === 'shopbot' ? shopbot : id === 'upf'
       ? `<div style="width:100%;height:100%;background:linear-gradient(135deg,#1c3d63,#229ed9);display:flex;align-items:center;justify-content:center;gap:34px;color:#fff;font-weight:600">
          <div style="display:grid;grid-template-columns:auto auto;gap:12px">${['DOCX', 'XLSX', 'PPTX', 'JPG'].map((x) => `<b style="font-size:20px;padding:12px 18px;border-radius:8px;background:rgba(255,255,255,.16)">${x}</b>`).join('')}</div>
          <span style="font-size:52px;opacity:.8">→</span>
